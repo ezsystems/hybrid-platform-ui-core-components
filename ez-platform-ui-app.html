@@ -1,0 +1,38 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<!--<link rel="import" href="../polymer/lib/elements/dom-if.html">-->
+<!--<link rel="import" href="../polymer/lib/elements/dom-repeat.html">-->
+
+<!--
+`ez-platform-ui-app`
+
+
+@demo demo/index.html
+-->
+
+<dom-module id="ez-platform-ui-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /** @polymerElement */
+    class EzPlatformUiApp extends Polymer.Element {
+      static get is() { return 'ez-platform-ui-app'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'ez-platform-ui-app'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(MyElement.is, MyElement);
+  </script>
+</dom-module>
