@@ -1,0 +1,7 @@
+{
+    "name": "ezsystems/hybrid-platform-ui-core-components",
+    "description": "Hybrid Platform UI core frontend components",
+    "type": "ezplatform-assets",
+    "license": "GPL-v2",
+    "require": {}
+}
