@@ -3,5 +3,7 @@
     "description": "Hybrid Platform UI core frontend components",
     "type": "ezplatform-assets",
     "license": "GPL-v2",
-    "require": {}
+    "require": {
+        "composer/installers": "~1.3"
+    }
 }
