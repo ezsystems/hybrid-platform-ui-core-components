@@ -2,7 +2,7 @@
   "name": "hybrid-platform-ui-core-components",
   "version": "0.0.1",
   "description": "Hybrid Platform UI core frontend components",
-  "main": "ez-platform-ui-app.html",
+  "main": "core-components.html",
   "directories": {
     "test": "test"
   },

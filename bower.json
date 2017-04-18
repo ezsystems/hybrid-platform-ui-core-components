@@ -1,6 +1,6 @@
 {
-  "name": "ez-platform-ui-app",
-  "main": "ez-platform-ui-app.html",
+  "name": "hybrid-platform-ui-core-components",
+  "main": "core-components.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0-rc.2"
   },
