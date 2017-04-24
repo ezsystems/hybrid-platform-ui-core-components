@@ -305,7 +305,14 @@
             "error",
             "never"
         ],
-        "valid-jsdoc": "error",
+        "valid-jsdoc": [
+            "error",
+            {
+                "requireReturn": false,
+                "requireParamDescription": false,
+                "requireReturnDescription": false
+            }
+        ],
         "vars-on-top": "off",
         "wrap-iife": ["error", "any"],
         "wrap-regex": "off",
