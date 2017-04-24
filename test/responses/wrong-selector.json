@@ -1,0 +1,13 @@
+{
+    "selector": "ez-platform-ui-app",
+    "update": {
+        "children": [{
+            "selector": "whatever",
+            "update": {
+                "attributes": {
+                    "data-wrong": "wrong"
+                }
+            }
+        }]
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "selector": "ez-platform-ui-app",
+    "update": {
+        "attributes": {
+            "data-updated": true
+        }
+    }
+}

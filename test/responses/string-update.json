@@ -1,0 +1,9 @@
+{
+    "selector": "ez-platform-ui-app",
+    "update": {
+        "children": [{
+            "selector": "main",
+            "update": "<main>updated</main>"
+        }]
+    }
+}

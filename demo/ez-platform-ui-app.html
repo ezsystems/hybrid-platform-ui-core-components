@@ -13,6 +13,21 @@
     <link rel="import" href="../ez-platform-ui-app.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
+        ez-platform-ui-app {
+            position: relative;
+        }
+
+        ez-platform-ui-app:after {
+            font-style: italic;
+            position: absolute;
+            right: 0;
+            bottom: -2em;
+            content: "title: '" attr(title) "' url: '" attr(url) "'";
+        }
+        nav:after {
+            font-style: italic;
+            content: "Last update: '" attr(data-last-update) "'";
+        }
     </style>
   </head>
   <body>
@@ -20,7 +35,15 @@
       <h3>Basic ez-platform-ui-app demo</h3>
       <demo-snippet>
         <template>
-          <ez-platform-ui-app></ez-platform-ui-app>
+            <ez-platform-ui-app>
+                <nav data-last-update="none">
+                    Navigation
+                </nav>
+                <main>
+                    <p>default main content</p>
+                    <p><a href="update1.json">Update 1</a></p>
+                </main>
+            </ez-platform-ui-app>
         </template>
       </demo-snippet>
     </div>
