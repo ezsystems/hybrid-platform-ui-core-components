@@ -254,10 +254,7 @@
         ],
         "object-property-newline": "off",
         "object-shorthand": "off",
-        "one-var": [
-            "error",
-            "always"
-        ],
+        "one-var": "off",
         "one-var-declaration-per-line": "off",
         "operator-assignment": "off",
         "operator-linebreak": "off",
