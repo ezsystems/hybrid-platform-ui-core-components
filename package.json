@@ -1,0 +1,28 @@
+{
+  "name": "hybrid-platform-ui-core-components",
+  "version": "0.0.1",
+  "description": "Hybrid Platform UI core frontend components",
+  "main": "core-components.html",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "polymer-cli": "^0.18.0",
+    "web-component-tester": "^5.0.1"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/polymer test",
+    "lint": "./node_modules/.bin/eslint js test/js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ezsystems/hybrid-platform-ui-core-components.git"
+  },
+  "author": "",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/ezsystems/hybrid-platform-ui-core-components/issues"
+  },
+  "homepage": "https://github.com/ezsystems/hybrid-platform-ui-core-components#readme"
+}

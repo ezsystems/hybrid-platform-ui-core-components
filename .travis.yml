@@ -1,0 +1,18 @@
+dist: trusty
+language: node_js
+before_script:
+    - npm install -g bower
+    - bower install
+addons:
+    firefox: latest
+    apt:
+        sources:
+            - google-chrome
+        packages:
+            - google-chrome-stable
+script:
+    - xvfb-run npm test
+    - npm run lint
+branches:
+    only:
+        - master
