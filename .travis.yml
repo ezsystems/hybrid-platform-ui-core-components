@@ -1,18 +1,26 @@
 dist: trusty
 language: node_js
+
 before_script:
-    - npm install -g bower
-    - bower install
+  - npm install -g bower
+  - bower install
+
 addons:
-    firefox: latest
-    apt:
-        sources:
-            - google-chrome
-        packages:
-            - google-chrome-stable
-script:
-    - xvfb-run npm test
-    - npm run lint
-branches:
-    only:
-        - master
+  firefox: latest
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+
+script: $TEST_CMD
+
+matrix:
+  include:
+    - env: TEST_CMD="xvfb-run npm run test-local"
+    - env: TEST_CMD="npm run test-sauce"
+
+env:
+  global:
+    - secure: bOOUU+HSfghZEH4npV/suJaML+yTwxruMO2z/ZtELrMSTzDD3RJXbeyEcpS54Hq5PdyjumPT+zm2qG10TgMjsbNPNTkt+6X00ksWbpqmhwoiDxsXJRpOTjPUm5EtRjXAmo+jpIIEb3APWbXtjWrD9O2gmObkYuMLbEVJiKulOgg2dsNEc4ri2lFYGt6WHKZq3A1YHzr2AED57mMhwTrmZOXB422Jq/CLnUnygqEvOmjTIyVEAqStyRczqBjSe7WAV5yZFFd5v40ZzVoC66MevI7g81I/iIMEb+HIh+2QJCzo1gQH0WpqtEHuNoCiznBMkAfpNY2JzW0Ac1eWZ+942ZE34MY0xogmHugwGVa0y3N/GRMwpKLKa5PPSj0cIQqDfMXInaa36dfHOsc4hDzh7IdQRFDM5aMOklOWh15x7CGMbJmuQHmponaAMOghLId23T4ADr0beleYK27kMF6rC6c0f6k7m0CNoDqiXKptY7KcOOwN4xTmznEVAcpbVGiDpU1/KBa53AwWC2Smgeg52Yeg9Vw+qY2UVgfBEJg8JIFYlPBgnrpOHbI1unpvJdG9Ol1F5H+CA6W3RbxFXU2NF5UihbwrnCotGlqE3GQynKilJTsJu5xNaf7n4mNkbb3n/2HVWimGzZscX08glw/JhsPDrxLTW+YPzw9S/yWzo0A=
+    - secure: HhBc714MaABVM11RfdPgo4Ov8eqNGiQfe7Ivu4t0KMg+2d04Dn95bMLCKzX1LHwlVYrslrXODHhgRptT7tJBYyFes0pF+4R9zYtH4BN6e5VQkJz+MmF5Z00C4OkDImrNQEHKxGOFyCLyBWzppoEngiz6aS2W7BCMI0/RU/jpppHQTQ1GV9lQVW4XzcFy2hJxQF13vIw6Rx14dgtfiwKW0dAJp3nG9ccEMVh4pwlNgHPARV7mKkRVkw+fhxXNr9NcubCksXTLBlOmCKTGz9mSenyFyQ+gTLy/57ZY5zH3TLMK4tMCr5KzQVI77Oi70WvxXMXH/y2bYdM2TMHp21lxDT5bD1TtsTXiab7lsedQ3gOiK4Aujio/igkUrSxYCu2qWhQQ5Cpl2m1eD5D5NYDuvyNPYrydyTrNPLUnJ1vOqMpo9xyt2999QDAbT33Q0G33wkKRzloVSO2Y1owjUjSGvfewI6Mmibp3IW5asqPxRpTyLP4dwnWew30Kvx4qO6DFyTyTMoZm3P/ImX3iat0mIu9Rj3668FeD8MyvfT3H6cQmaJPzjRWlrOrIy6IFHKZgFNs/xblbXGHmFnWEaonpXNBLCPaj8BUTa7rwv685t1fmtM/OK2NLlfs5R4vF1Hd/Pvb7YNHUGHkslF/HwexY5VcTstyC1l5QqWcvRnCNnnA=
