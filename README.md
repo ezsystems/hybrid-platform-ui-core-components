@@ -58,3 +58,20 @@ platforms/browsers are defined in `wct.conf.json`.
 ```bash
 $ npm run lint
 ```
+
+### Run local demo of components
+
+```bash
+$ npm run serve
+```
+
+This will run a local web server to serve the demo. After running that command,
+it should display the URL to reach the demo.
+
+Alternatively, you can execute:
+
+```bash
+$ npm run serve -- -o
+```
+
+to open the index page in the default browser.
