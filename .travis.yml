@@ -19,8 +19,6 @@ matrix:
   include:
     - env: TEST_CMD="xvfb-run npm run test-local"
     - env: TEST_CMD="npm run test-sauce"
-  allow_failures:
-    - env: TEST_CMD="npm run test-sauce"
 
 env:
   global:
