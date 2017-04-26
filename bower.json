@@ -2,7 +2,8 @@
   "name": "hybrid-platform-ui-core-components",
   "main": "core-components.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0-rc.2"
+    "polymer": "Polymer/polymer#^2.0.0-rc.2",
+    "element-matches": "jonathantneal/closest#^2.0.1"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#2.0-preview",
