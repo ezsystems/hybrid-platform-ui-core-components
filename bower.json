@@ -3,7 +3,8 @@
   "main": "core-components.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0-rc.2",
-    "element-matches": "jonathantneal/closest#^2.0.1"
+    "element-matches": "jonathantneal/closest#^2.0.1",
+    "fetch": "^2.0.3"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#2.0-preview",
