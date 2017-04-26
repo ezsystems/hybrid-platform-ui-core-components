@@ -31,6 +31,13 @@ $ npm run test-local
 
 This will executes unit tests in local browsers.
 
+To keep the test browsers open (and keep the test web server alive), you can add
+the `-p` option:
+
+```bash
+$ npm run test-local -- -p
+```
+
 #### Using SauceLabs
 
 First, create an account at https://saucelabs.com/ (It's free for Open Source
