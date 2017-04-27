@@ -162,13 +162,13 @@ describe('ez-platform-ui-app', function() {
             return click;
         }
 
-        function assertEventIgnored(event, element) {
+        function assertEventIgnored(event, element, expectedUrl) {
             assert.notOk(
                 event.defaultPrevented,
                 'The event should not be prevented'
             );
             assert.equal(
-                location.href,
+                expectedUrl,
                 element.url,
                 'The `url` property should remain to its default value'
             );
@@ -202,24 +202,25 @@ describe('ez-platform-ui-app', function() {
         });
 
         it('should ignore click `<a>` without `href`', function () {
-            const button = element.querySelector('.no-href');
-            const event = simulateClick(button);
+            const anchor = element.querySelector('.no-href');
+            const event = simulateClick(anchor);
 
-            assertEventIgnored(event, element);
+            assertEventIgnored(event, element, location.href);
         });
 
         it('should ignore click others element than links', function () {
             const button = element.querySelector('.not-a-link');
             const event = simulateClick(button);
 
-            assertEventIgnored(event, element);
+            assertEventIgnored(event, element, location.href);
         });
 
         it('should ignore click on anchor `<a>`', function () {
-            const button = element.querySelector('.anchor');
-            const event = simulateClick(button);
+            const anchor = element.querySelector('.anchor');
+            const initialUrl = location.href;
+            const event = simulateClick(anchor);
 
-            assertEventIgnored(event, element);
+            assertEventIgnored(event, element, initialUrl);
         });
     });
 
