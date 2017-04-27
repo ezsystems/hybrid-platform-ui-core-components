@@ -226,14 +226,17 @@ describe('ez-platform-ui-app', function() {
 
     describe('`ez:app:updated` event', function () {
         it('should bubble`', function (done) {
-            document.documentElement.addEventListener('ez:app:updated', function (e) {
+            const assertOnce = function (e) {
+                document.documentElement.removeEventListener('ez:app:updated', assertOnce);
                 assert.strictEqual(
                     element,
                     e.target,
                     'The event target should be the `ez-platform-ui-app` element'
                 );
                 done();
-            }, {once: true});
+            };
+
+            document.documentElement.addEventListener('ez:app:updated', assertOnce);
             element.url = urlEmptyUpdate;
         });
     });
