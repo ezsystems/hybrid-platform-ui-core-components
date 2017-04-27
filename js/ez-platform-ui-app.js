@@ -42,9 +42,16 @@
     }
 
     /**
-     * `<ez-platform-ui-app>` represents the application in a page. It is
-     * responsible for handling click on links and for fetching and applying the
+     * `<ez-platform-ui-app>` represents the application in a page which will
+     * enhance the navigation by avoiding full page refresh. It is responsible
+     * for handling click on links and for fetching and applying the
      * corresponding update.
+     *
+     * Among others standard APIs, this component relies on `fetch` and
+     * `Element.closest`. `fetch` is not supported by Safari 10.0 and
+     * `Element.closest` is not available in Edge 14. So for this component to
+     * work in those browser, the page should include polyfills of those
+     * standard API.
      *
      * @polymerElement
      * @demo demo/ez-platform-ui-app.html
@@ -174,7 +181,6 @@
          */
         _enhanceNavigation() {
             this.addEventListener('click', (e) => {
-                // FIXME: need a polyfill for closest for Edge 14
                 const anchor = e.target.closest('a');
 
                 if ( PlatformUiApp._isNavigationLink(anchor) ) {
