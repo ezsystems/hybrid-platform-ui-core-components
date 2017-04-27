@@ -20,7 +20,14 @@
       <h3>Basic ez-toolbar demo</h3>
       <demo-snippet>
         <template>
-          <ez-toolbar></ez-toolbar>
+          <ez-toolbar>
+            <main>
+              <p>I'm a toolbar</p>
+            </main>
+          </ez-toolbar>
+          <button onclick="document.querySelector('ez-toolbar').visible = !document.querySelector('ez-toolbar').visible">
+            Toogle visibility
+          </button>
         </template>
       </demo-snippet>
     </div>
