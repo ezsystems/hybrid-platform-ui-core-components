@@ -17,6 +17,7 @@ script: $TEST_CMD
 
 matrix:
   include:
+    - env: TEST_CMD="npm run lint"
     - env: TEST_CMD="xvfb-run npm run test-local"
     - env: TEST_CMD="npm run test-sauce"
   allow_failures:
