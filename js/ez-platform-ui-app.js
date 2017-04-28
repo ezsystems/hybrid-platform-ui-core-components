@@ -122,7 +122,6 @@
         _update(updateUrl, oldUrl) {
             if ( !oldUrl ) {
                 // initial dispatch, no need for an update
-                this._pushHistory();
                 return;
             }
             this.updating = true;
@@ -130,8 +129,8 @@
             fetchUpdateStruct(updateUrl)
                 .then(this._updateApp.bind(this))
                 .then((struct) => {
+                    this._pushHistory();
                     this.updating = false;
-                    this._pushHistory(true);
                     this._fireUpdated(updateUrl, struct);
 
                     return struct;
@@ -156,12 +155,10 @@
 
         /**
          * Pushes a new History entry.
-         *
-         * @param {Boolean} enhanced
          */
-        _pushHistory(enhanced) {
+        _pushHistory() {
             history.pushState(
-                {url: this.url, enhanced: enhanced},
+                {url: this.url, enhanced: true},
                 this.title,
                 this.url
             );
@@ -188,9 +185,15 @@
                     this.url = anchor.href;
                 }
             });
-            window.addEventListener('popstate', (e) => {
+            this._popstateHandler = (e) => {
                 this._goBackToState(e.state);
-            });
+            };
+            window.addEventListener('popstate', this._popstateHandler);
+        }
+
+        destructor() {
+            window.removeEventListener('popstate', this._popstateHandler);
+            super.destructor();
         }
 
         /**
@@ -199,14 +202,10 @@
          * @param {Object} state
          */
         _goBackToState(state) {
-            if ( !state || !state.url ) {
+            if ( !state || !state.url || !state.enhanced ) {
                 return;
             }
-            if ( state.enhanced ) {
-                this.url = state.url;
-            } else {
-                location.href = state.url;
-            }
+            this.url = state.url;
         }
 
         /**

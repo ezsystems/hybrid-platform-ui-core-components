@@ -61,17 +61,6 @@ describe('ez-platform-ui-app', function() {
                 );
             });
 
-            it('should replace an history entry', function () {
-                assert.equal(
-                    element.url,
-                    history.state.url
-                );
-                assert.notOk(
-                    history.state.enhanced,
-                    'The state should NOT have the `enhanced` property set to true'
-                );
-            });
-
             describe('set', function () {
                 it('should be reflected to an attribute', function () {
                     element.url = urlEmptyUpdate;
@@ -203,21 +192,32 @@ describe('ez-platform-ui-app', function() {
 
         it('should ignore click `<a>` without `href`', function () {
             const anchor = element.querySelector('.no-href');
+            const initialUrl = element.url;
             const event = simulateClick(anchor);
 
-            assertEventIgnored(event, element, location.href);
+            assertEventIgnored(event, element, initialUrl);
         });
 
         it('should ignore click others element than links', function () {
             const button = element.querySelector('.not-a-link');
+            const initialUrl = element.url;
             const event = simulateClick(button);
 
-            assertEventIgnored(event, element, location.href);
+            assertEventIgnored(event, element, initialUrl);
         });
 
         it('should ignore click on anchor `<a>`', function () {
+            // this test is ignored because Edge (at least 14) has a weird
+            // behaviour. It seems that clicking on <a href="#test"></a>
+            // triggers a popstate event (like if the user uses the back button)
+            // which is of course not the right behavior. But this seems to
+            // happen only in unit test, this behavior does not seem to occur in
+            // a normal web page...
+            if ( navigator.userAgent.match(/Edge/) ) {
+                this.skip();
+            }
             const anchor = element.querySelector('.anchor');
-            const initialUrl = location.href;
+            const initialUrl = element.url;
             const event = simulateClick(anchor);
 
             assertEventIgnored(event, element, initialUrl);
