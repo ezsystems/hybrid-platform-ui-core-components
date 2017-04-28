@@ -15,7 +15,21 @@
 
         <test-fixture id="BasicTestFixture">
             <template>
-                <ez-platform-ui-app></ez-platform-ui-app>
+                <ez-platform-ui-app>
+                    <p>
+                        <button class="not-a-link">Not a link</button>
+                        <a class="no-href">No href</a>
+                        <a class="anchor" href="#test">Anchor link</a>
+                        <a class="enhanced-link" href="/test/responses/set-data-updated-attr.json">
+                            Enhanced link
+                            <span>
+                                <span class="deep-inside-link">Inside</span>
+                            </span>
+                        </a>
+                    </p>
+                    <main>to be string updated</main>
+                    <nav>to be receive an attribute update</nav>
+                </ez-platform-ui-app>
             </template>
         </test-fixture>
 

@@ -1,0 +1,22 @@
+{
+    "selector": "ez-platform-ui-app",
+    "update": {
+        "attributes": {
+            "title": "Update 1 with update1.json"
+        },
+        "children": [
+            {
+                "selector": "nav",
+                "update": {
+                    "attributes": {
+                        "data-last-update": "update 1"
+                    }
+                }
+            },
+            {
+                "selector": "main",
+                "update": "<main><p>update 1 content</p><p><a href='update2.json'>Update 2</a></p></main>"
+            }
+        ]
+    }
+}

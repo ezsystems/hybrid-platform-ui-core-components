@@ -1,0 +1,14 @@
+{
+    "selector": "ez-platform-ui-app",
+    "update": {
+        "children": [{
+            "selector": "nav",
+            "update": {
+                "attributes": {
+                    "data-foo": "foo",
+                    "data-bar": "bar"
+                }
+            }
+        }]
+    }
+}

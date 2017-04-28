@@ -1,0 +1,9 @@
+{
+    "selector": "ez-platform-ui-app",
+    "update": {
+        "attributes": {
+            "data-foo": "foo",
+            "data-bar": "bar"
+        }
+    }
+}

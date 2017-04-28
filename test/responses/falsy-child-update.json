@@ -1,0 +1,6 @@
+{
+    "selector": "ez-platform-ui-app",
+    "update": {
+        "children": [null, false, ""]
+    }
+}
