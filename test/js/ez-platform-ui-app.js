@@ -246,30 +246,28 @@ describe('ez-platform-ui-app', function() {
         });
 
         it('should reuse the last history entry', function (done) {
-            const backRequest = function () {
-                element.removeEventListener('ez:app:updated', backRequest);
-                history.back();
-                element.addEventListener('ez:app:updated', function () {
-                    assert.equal(
-                        element.url,
-                        urlEmptyUpdate
-                    );
-                    assert.equal(
-                        history.state.url,
-                        urlEmptyUpdate,
-                        'No new history should have been created'
-                    );
-                    done();
-                });
+            const assertBack = function () {
+                window.removeEventListener('popstate', assertBack);
+
+                assert.equal(
+                    element.url,
+                    urlEmptyUpdate
+                );
+                done();
             };
-            const secondRequest = function () {
-                element.removeEventListener('ez:app:updated', secondRequest);
-                element.url = urlEmptyUpdate + '?second';
-                element.addEventListener('ez:app:updated', backRequest);
+            const back = function () {
+                element.removeEventListener('ez:app:updated', back);
+                window.addEventListener('popstate', assertBack);
+                history.back();
             };
 
-            element.addEventListener('ez:app:updated', secondRequest);
-            element.url = urlEmptyUpdate;
+            history.pushState({
+                url: urlEmptyUpdate,
+                enhanced: true,
+            }, '', urlEmptyUpdate);
+
+            element.addEventListener('ez:app:updated', back);
+            element.url = urlEmptyUpdate + '?second';
         });
     });
 
