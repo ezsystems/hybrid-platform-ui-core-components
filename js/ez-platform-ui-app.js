@@ -129,7 +129,10 @@
             fetchUpdateStruct(updateUrl)
                 .then(this._updateApp.bind(this))
                 .then((struct) => {
-                    this._pushHistory();
+                    if ( !this._fromHistory ) {
+                        this._pushHistory();
+                    }
+                    delete this._fromHistory;
                     this.updating = false;
                     this._fireUpdated(updateUrl, struct);
 
@@ -205,6 +208,7 @@
             if ( !state || !state.url || !state.enhanced ) {
                 return;
             }
+            this._fromHistory = true;
             this.url = state.url;
         }
 

@@ -72,31 +72,18 @@ describe('ez-platform-ui-app', function() {
                 });
 
                 it('should trigger an AJAX request', function (done) {
-                    element.addEventListener('ez:app:updated', function () {
+                    const check = function () {
+                        element.removeEventListener('ez:app:updated', check);
                         assert.ok(
                             element.hasAttribute('data-updated'),
                             'The element should have been updated from the response'
                         );
 
                         done();
-                    });
+                    };
+
+                    element.addEventListener('ez:app:updated', check);
                     element.url = urlBaseUpdate;
-                });
-
-                it('should push an history entry', function (done) {
-                    element.addEventListener('ez:app:updated', function () {
-                        assert.equal(
-                            urlEmptyUpdate,
-                            history.state.url
-                        );
-                        assert.ok(
-                            history.state.enhanced,
-                            'The state should have the `enhanced` property set to true'
-                        );
-
-                        done();
-                    });
-                    element.url = urlEmptyUpdate;
                 });
             });
         });
@@ -237,6 +224,51 @@ describe('ez-platform-ui-app', function() {
             };
 
             document.documentElement.addEventListener('ez:app:updated', assertOnce);
+            element.url = urlEmptyUpdate;
+        });
+    });
+
+    describe('history', function () {
+        it('should push an history entry', function (done) {
+            element.addEventListener('ez:app:updated', function () {
+                assert.equal(
+                    urlEmptyUpdate,
+                    history.state.url
+                );
+                assert.ok(
+                    history.state.enhanced,
+                    'The state should have the `enhanced` property set to true'
+                );
+
+                done();
+            });
+            element.url = urlEmptyUpdate;
+        });
+
+        it('should reuse the last history entry', function (done) {
+            const backRequest = function () {
+                element.removeEventListener('ez:app:updated', backRequest);
+                history.back();
+                element.addEventListener('ez:app:updated', function () {
+                    assert.equal(
+                        element.url,
+                        urlEmptyUpdate
+                    );
+                    assert.equal(
+                        history.state.url,
+                        urlEmptyUpdate,
+                        'No new history should have been created'
+                    );
+                    done();
+                });
+            };
+            const secondRequest = function () {
+                element.removeEventListener('ez:app:updated', secondRequest);
+                element.url = urlEmptyUpdate + '?second';
+                element.addEventListener('ez:app:updated', backRequest);
+            };
+
+            element.addEventListener('ez:app:updated', secondRequest);
             element.url = urlEmptyUpdate;
         });
     });
