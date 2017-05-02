@@ -42,9 +42,16 @@
     }
 
     /**
-     * `<ez-platform-ui-app>` represents the application in a page. It is
-     * responsible for handling click on links and for fetching and applying the
+     * `<ez-platform-ui-app>` represents the application in a page which will
+     * enhance the navigation by avoiding full page refresh. It is responsible
+     * for handling click on links and for fetching and applying the
      * corresponding update.
+     *
+     * Among others standard APIs, this component relies on `fetch` and
+     * `Element.closest`. `fetch` is not supported by Safari 10.0 and
+     * `Element.closest` is not available in Edge 14. So for this component to
+     * work in those browser, the page should include polyfills of those
+     * standard API.
      *
      * @polymerElement
      * @demo demo/ez-platform-ui-app.html
@@ -115,7 +122,6 @@
         _update(updateUrl, oldUrl) {
             if ( !oldUrl ) {
                 // initial dispatch, no need for an update
-                this._pushHistory();
                 return;
             }
             this.updating = true;
@@ -123,8 +129,11 @@
             fetchUpdateStruct(updateUrl)
                 .then(this._updateApp.bind(this))
                 .then((struct) => {
+                    if ( !this._fromHistory ) {
+                        this._pushHistory();
+                    }
+                    delete this._fromHistory;
                     this.updating = false;
-                    this._pushHistory(true);
                     this._fireUpdated(updateUrl, struct);
 
                     return struct;
@@ -149,12 +158,10 @@
 
         /**
          * Pushes a new History entry.
-         *
-         * @param {Boolean} enhanced
          */
-        _pushHistory(enhanced) {
+        _pushHistory() {
             history.pushState(
-                {url: this.url, enhanced: enhanced},
+                {url: this.url, enhanced: true},
                 this.title,
                 this.url
             );
@@ -174,7 +181,6 @@
          */
         _enhanceNavigation() {
             this.addEventListener('click', (e) => {
-                // FIXME: need a polyfill for closest for Edge 14
                 const anchor = e.target.closest('a');
 
                 if ( PlatformUiApp._isNavigationLink(anchor) ) {
@@ -182,9 +188,15 @@
                     this.url = anchor.href;
                 }
             });
-            window.addEventListener('popstate', (e) => {
+            this._popstateHandler = (e) => {
                 this._goBackToState(e.state);
-            });
+            };
+            window.addEventListener('popstate', this._popstateHandler);
+        }
+
+        destructor() {
+            window.removeEventListener('popstate', this._popstateHandler);
+            super.destructor();
         }
 
         /**
@@ -193,14 +205,11 @@
          * @param {Object} state
          */
         _goBackToState(state) {
-            if ( !state || !state.url ) {
+            if ( !state || !state.url || !state.enhanced ) {
                 return;
             }
-            if ( state.enhanced ) {
-                this.url = state.url;
-            } else {
-                location.href = state.url;
-            }
+            this._fromHistory = true;
+            this.url = state.url;
         }
 
         /**

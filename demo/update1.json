@@ -15,7 +15,7 @@
             },
             {
                 "selector": "main",
-                "update": "<main><p>update 1 content</p><p><a href='update2.json'>Update 2</a></p></main>"
+                "update": "<main><p>update 1 content <a href='#test'>Anchor</a></p><p><a href='update2.json'>Update 2</a></p></main>"
             }
         ]
     }

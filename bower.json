@@ -7,7 +7,9 @@
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#2.0-preview",
     "web-component-tester": "^6.0.0-prerelease.5",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.5"
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.5",
+    "element-matches": "jonathantneal/closest#^2.0.1",
+    "fetch": "^2.0.3"
   },
   "resolutions": {
     "polymer": "^2.0.0-rc.2"

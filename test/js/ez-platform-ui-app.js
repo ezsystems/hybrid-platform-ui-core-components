@@ -61,17 +61,6 @@ describe('ez-platform-ui-app', function() {
                 );
             });
 
-            it('should replace an history entry', function () {
-                assert.equal(
-                    element.url,
-                    history.state.url
-                );
-                assert.notOk(
-                    history.state.enhanced,
-                    'The state should NOT have the `enhanced` property set to true'
-                );
-            });
-
             describe('set', function () {
                 it('should be reflected to an attribute', function () {
                     element.url = urlEmptyUpdate;
@@ -83,31 +72,18 @@ describe('ez-platform-ui-app', function() {
                 });
 
                 it('should trigger an AJAX request', function (done) {
-                    element.addEventListener('ez:app:updated', function () {
+                    const check = function () {
+                        element.removeEventListener('ez:app:updated', check);
                         assert.ok(
                             element.hasAttribute('data-updated'),
                             'The element should have been updated from the response'
                         );
 
                         done();
-                    });
+                    };
+
+                    element.addEventListener('ez:app:updated', check);
                     element.url = urlBaseUpdate;
-                });
-
-                it('should push an history entry', function (done) {
-                    element.addEventListener('ez:app:updated', function () {
-                        assert.equal(
-                            urlEmptyUpdate,
-                            history.state.url
-                        );
-                        assert.ok(
-                            history.state.enhanced,
-                            'The state should have the `enhanced` property set to true'
-                        );
-
-                        done();
-                    });
-                    element.url = urlEmptyUpdate;
                 });
             });
         });
@@ -162,13 +138,13 @@ describe('ez-platform-ui-app', function() {
             return click;
         }
 
-        function assertEventIgnored(event, element) {
+        function assertEventIgnored(event, element, expectedUrl) {
             assert.notOk(
                 event.defaultPrevented,
                 'The event should not be prevented'
             );
             assert.equal(
-                location.href,
+                expectedUrl,
                 element.url,
                 'The `url` property should remain to its default value'
             );
@@ -202,37 +178,97 @@ describe('ez-platform-ui-app', function() {
         });
 
         it('should ignore click `<a>` without `href`', function () {
-            const button = element.querySelector('.no-href');
-            const event = simulateClick(button);
+            const anchor = element.querySelector('.no-href');
+            const initialUrl = element.url;
+            const event = simulateClick(anchor);
 
-            assertEventIgnored(event, element);
+            assertEventIgnored(event, element, initialUrl);
         });
 
         it('should ignore click others element than links', function () {
             const button = element.querySelector('.not-a-link');
+            const initialUrl = element.url;
             const event = simulateClick(button);
 
-            assertEventIgnored(event, element);
+            assertEventIgnored(event, element, initialUrl);
         });
 
         it('should ignore click on anchor `<a>`', function () {
-            const button = element.querySelector('.anchor');
-            const event = simulateClick(button);
+            // this test is ignored because Edge (at least 14) has a weird
+            // behaviour. It seems that clicking on <a href="#test"></a>
+            // triggers a popstate event (like if the user uses the back button)
+            // which is of course not the right behavior. But this seems to
+            // happen only in unit test, this behavior does not seem to occur in
+            // a normal web page...
+            if ( navigator.userAgent.match(/Edge/) ) {
+                this.skip();
+            }
+            const anchor = element.querySelector('.anchor');
+            const initialUrl = element.url;
+            const event = simulateClick(anchor);
 
-            assertEventIgnored(event, element);
+            assertEventIgnored(event, element, initialUrl);
         });
     });
 
     describe('`ez:app:updated` event', function () {
         it('should bubble`', function (done) {
-            document.documentElement.addEventListener('ez:app:updated', function (e) {
+            const assertOnce = function (e) {
+                document.documentElement.removeEventListener('ez:app:updated', assertOnce);
                 assert.strictEqual(
                     element,
                     e.target,
                     'The event target should be the `ez-platform-ui-app` element'
                 );
                 done();
-            }, {once: true});
+            };
+
+            document.documentElement.addEventListener('ez:app:updated', assertOnce);
+            element.url = urlEmptyUpdate;
+        });
+    });
+
+    describe('history', function () {
+        it('should push an history entry', function (done) {
+            element.addEventListener('ez:app:updated', function () {
+                assert.equal(
+                    urlEmptyUpdate,
+                    history.state.url
+                );
+                assert.ok(
+                    history.state.enhanced,
+                    'The state should have the `enhanced` property set to true'
+                );
+
+                done();
+            });
+            element.url = urlEmptyUpdate;
+        });
+
+        it('should reuse the last history entry', function (done) {
+            const backRequest = function () {
+                element.removeEventListener('ez:app:updated', backRequest);
+                history.back();
+                element.addEventListener('ez:app:updated', function () {
+                    assert.equal(
+                        element.url,
+                        urlEmptyUpdate
+                    );
+                    assert.equal(
+                        history.state.url,
+                        urlEmptyUpdate,
+                        'No new history should have been created'
+                    );
+                    done();
+                });
+            };
+            const secondRequest = function () {
+                element.removeEventListener('ez:app:updated', secondRequest);
+                element.url = urlEmptyUpdate + '?second';
+                element.addEventListener('ez:app:updated', backRequest);
+            };
+
+            element.addEventListener('ez:app:updated', secondRequest);
             element.url = urlEmptyUpdate;
         });
     });
