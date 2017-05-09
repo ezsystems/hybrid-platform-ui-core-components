@@ -1,4 +1,3 @@
-/* global describe, it, assert, fixture, beforeEach */
 describe('ez-toolbar', function() {
     let element;
 

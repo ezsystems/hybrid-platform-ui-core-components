@@ -1,16 +1,18 @@
 {
     "env": {
-        "browser": true
+        "browser": true,
+        "mocha": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
-        "ecmaVersion": 6,
-        "ecmaFeatures": {
-            "jsx": true
-        }
+        "ecmaVersion": 6
     },
     "globals": {
-        "Polymer": true
+        "Polymer": false,
+        "fixture": false,
+        "assert": false,
+        "sinon": false,
+        "Promise": false
     },
     "rules": {
         "accessor-pairs": "off",

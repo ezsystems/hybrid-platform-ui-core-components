@@ -1,4 +1,3 @@
-/* global describe, it, beforeEach, afterEach, assert, fixture, sinon, Promise */
 describe('ez-platform-ui-app', function() {
     let element;
 
