@@ -5,5 +5,8 @@
     "license": "GPL-2.0",
     "require": {
         "composer/installers": "~1.3"
+    },
+    "extra": {
+        "dev-master": "0.1.x-dev"
     }
 }
