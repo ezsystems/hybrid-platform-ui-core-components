@@ -4,8 +4,10 @@ describe('ez-platform-ui-app', function() {
     const urlEmptyUpdate = '/test/responses/empty.json';
     const urlBaseUpdate = '/test/responses/set-data-updated-attr.json';
     const urlSetAttributes = '/test/responses/set-attributes.json';
+    const urlSetProperties = '/test/responses/set-properties.json';
     const urlStringUpdate = '/test/responses/string-update.json';
     const urlSetChildAttributes = '/test/responses/set-child-attributes.json';
+    const urlSetChildProperties = '/test/responses/set-child-properties.json';
     const urlFalsyChildUpdate = '/test/responses/falsy-child-update.json';
     const urlWrong = '/test/responses/wrong-selector.json';
 
@@ -320,6 +322,25 @@ describe('ez-platform-ui-app', function() {
             element.url = urlSetAttributes;
         });
 
+        it('should be able to set properties', function (done) {
+            element.addEventListener('ez:app:updated', function () {
+                assert.equal(
+                    'updated title',
+                    element.title,
+                    'The `title` property should have been set'
+                );
+                assert.equal(
+                    'updated lang',
+                    element.lang,
+                    'The `lang` property should have been set'
+                );
+
+                done();
+            });
+            element.url = urlSetProperties;
+        });
+
+
         it('should be able to apply a string update to a child', function (done) {
             element.addEventListener('ez:app:updated', function () {
                 assert.equal(
@@ -348,6 +369,25 @@ describe('ez-platform-ui-app', function() {
                 done();
             });
             element.url = urlSetChildAttributes;
+        });
+
+        it('should be able to set properties on a child', function (done) {
+            element.addEventListener('ez:app:updated', function () {
+                const updated = element.querySelector('nav');
+
+                assert.equal(
+                    'updated content',
+                    updated.innerHTML,
+                    'The `innerHTML` property should have been updated'
+                );
+                assert.equal(
+                    'updated title',
+                    updated.title,
+                    'The `title` property should have been updated'
+                );
+                done();
+            });
+            element.url = urlSetChildProperties;
         });
 
         it('should handle a falsy child update', function (done) {

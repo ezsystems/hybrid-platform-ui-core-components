@@ -20,11 +20,15 @@
 
             element = element.parentNode.replaceChild(doc.body.firstChild, element);
         } else if ( updateStruct ) {
+            const properties = updateStruct.properties || {};
             const attributes = updateStruct.attributes || {};
             const children = updateStruct.children || [];
 
             Object.keys(attributes).forEach(function (attributeName) {
                 element.setAttribute(attributeName, attributes[attributeName]);
+            });
+            Object.keys(properties).forEach(function (propertyName) {
+                element[propertyName] = properties[propertyName];
             });
             children.forEach(function (childUpdate) {
                 if ( childUpdate ) {
