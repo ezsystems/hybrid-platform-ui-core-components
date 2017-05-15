@@ -1,0 +1,9 @@
+{
+    "selector": "ez-platform-ui-app",
+    "update": {
+        "properties": {
+            "title": "updated title",
+            "lang": "updated lang"
+        }
+    }
+}

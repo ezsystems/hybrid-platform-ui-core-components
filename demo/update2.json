@@ -10,6 +10,9 @@
                 "update": {
                     "attributes": {
                         "data-last-update": "update 2"
+                    },
+                    "properties": {
+                        "innerHTML": "Navigation, updated again :)"
                     }
                 }
             },

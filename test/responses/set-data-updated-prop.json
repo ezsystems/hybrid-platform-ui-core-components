@@ -1,0 +1,8 @@
+{
+    "selector": "ez-platform-ui-app",
+    "update": {
+        "properties": {
+            "className": "updated"
+        }
+    }
+}
