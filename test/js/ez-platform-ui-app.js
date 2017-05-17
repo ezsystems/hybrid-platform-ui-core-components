@@ -10,6 +10,7 @@ describe('ez-platform-ui-app', function() {
     const urlSetChildProperties = '/test/responses/set-child-properties.json';
     const urlFalsyChildUpdate = '/test/responses/falsy-child-update.json';
     const urlWrong = '/test/responses/wrong-selector.json';
+    const urlInvalidJson = '/test/responses/invalid.json';
 
     beforeEach(function () {
         element = fixture('BasicTestFixture');
@@ -86,6 +87,24 @@ describe('ez-platform-ui-app', function() {
                     element.addEventListener('ez:app:updated', check);
                     element.url = urlBaseUpdate;
                 });
+
+                it('should set `updating` and unset it', function (done) {
+                    const check = function () {
+                        element.removeEventListener('ez:app:updated', check);
+                        assert.isFalse(
+                            element.updating,
+                            '`updating` should have been set back to false'
+                        );
+                        done();
+                    };
+
+                    element.addEventListener('ez:app:updated', check);
+                    element.url = urlBaseUpdate;
+                    assert.isTrue(
+                        element.updating,
+                        '`updating` should be true'
+                    );
+                });
             });
         });
 
@@ -123,6 +142,19 @@ describe('ez-platform-ui-app', function() {
                         done();
                     });
                     element.url = urlEmptyUpdate;
+                });
+
+                it('should prevent further update while true', function (done) {
+                    const check = function () {
+                        element.removeEventListener(check);
+                        assert.fail('The app should not have been updated');
+                        done();
+                    };
+
+                    element.updating = true;
+                    element.addEventListener('ez:app:updated', check);
+                    element.url = urlBaseUpdate;
+                    setTimeout(done, 100);
                 });
             });
         });
@@ -163,52 +195,220 @@ describe('ez-platform-ui-app', function() {
             );
         }
 
-        it('should handle click on regular link', function () {
-            const link = element.querySelector('.enhanced-link');
-            const event = simulateClick(link);
+        describe('navigation', function () {
+            it('should handle click on regular link', function () {
+                const link = element.querySelector('.enhanced-link');
+                const event = simulateClick(link);
 
-            assertEventHandled(event, link, element);
+                assertEventHandled(event, link, element);
+            });
+
+            it('should handle click on element inside a regular link', function () {
+                const link = element.querySelector('.enhanced-link');
+                const inside = link.querySelector('.deep-inside-link');
+                const event = simulateClick(inside);
+
+                assertEventHandled(event, link, element);
+            });
+
+            it('should ignore click `<a>` without `href`', function () {
+                const anchor = element.querySelector('.no-href');
+                const initialUrl = element.url;
+                const event = simulateClick(anchor);
+
+                assertEventIgnored(event, element, initialUrl);
+            });
+
+            it('should ignore click others element than links', function () {
+                const button = element.querySelector('.not-a-link');
+                const initialUrl = element.url;
+                const event = simulateClick(button);
+
+                assertEventIgnored(event, element, initialUrl);
+            });
+
+            it('should ignore click on anchor `<a>`', function () {
+                // this test is ignored because Edge (at least 14) has a weird
+                // behaviour. It seems that clicking on <a href="#test"></a>
+                // triggers a popstate event (like if the user uses the back button)
+                // which is of course not the right behavior. But this seems to
+                // happen only in unit test, this behavior does not seem to occur in
+                // a normal web page...
+                if ( navigator.userAgent.match(/Edge/) ) {
+                    this.skip();
+                }
+                const anchor = element.querySelector('.anchor');
+                const initialUrl = element.url;
+                const event = simulateClick(anchor);
+
+                assertEventIgnored(event, element, initialUrl);
+            });
         });
 
-        it('should handle click on element inside a regular link', function () {
-            const link = element.querySelector('.enhanced-link');
-            const inside = link.querySelector('.deep-inside-link');
-            const event = simulateClick(inside);
+        describe('form', function () {
+            let fetch;
+            let formDataAppend;
+            let historyReplace;
 
-            assertEventHandled(event, link, element);
-        });
-
-        it('should ignore click `<a>` without `href`', function () {
-            const anchor = element.querySelector('.no-href');
-            const initialUrl = element.url;
-            const event = simulateClick(anchor);
-
-            assertEventIgnored(event, element, initialUrl);
-        });
-
-        it('should ignore click others element than links', function () {
-            const button = element.querySelector('.not-a-link');
-            const initialUrl = element.url;
-            const event = simulateClick(button);
-
-            assertEventIgnored(event, element, initialUrl);
-        });
-
-        it('should ignore click on anchor `<a>`', function () {
-            // this test is ignored because Edge (at least 14) has a weird
-            // behaviour. It seems that clicking on <a href="#test"></a>
-            // triggers a popstate event (like if the user uses the back button)
-            // which is of course not the right behavior. But this seems to
-            // happen only in unit test, this behavior does not seem to occur in
-            // a normal web page...
-            if ( navigator.userAgent.match(/Edge/) ) {
-                this.skip();
+            function submitForm(form) {
+                return form.dispatchEvent(new CustomEvent('submit', {
+                    bubbles: true,
+                    cancelable: true,
+                }));
             }
-            const anchor = element.querySelector('.anchor');
-            const initialUrl = element.url;
-            const event = simulateClick(anchor);
 
-            assertEventIgnored(event, element, initialUrl);
+            beforeEach(function () {
+                const FormDataOriginal = window.FormData;
+                const response = new Response('{}');
+
+                // https://github.com/Polymer/polyserve/issues/197
+                // Web Component Tester internal server does not support POST
+                // request, we are forced to stub `fetch` to simulate a POST
+                // request.
+                fetch = sinon.stub(window, 'fetch', function () {
+                    return Promise.resolve(response);
+                });
+                sinon.stub(window, 'FormData', (form) => {
+                    const fd = new FormDataOriginal(form);
+
+                    formDataAppend = sinon.spy(fd, 'append');
+
+                    return fd;
+                });
+                historyReplace = sinon.spy(history, 'replaceState');
+            });
+
+            afterEach(function () {
+                fetch.restore();
+                formDataAppend.restore();
+                FormData.restore();
+                historyReplace.restore();
+            });
+
+            it('should submit form in AJAX', function () {
+                const form = element.querySelector('form');
+                const kept = submitForm(form);
+                const headers = fetch.firstCall.args[1].headers;
+
+                assert.isFalse(
+                    kept,
+                    'The `submit` event should have been prevented'
+                );
+                assert.isTrue(
+                    fetch.calledOnce,
+                    'An AJAX request should have been triggered'
+                );
+                assert.equal(
+                    '1',
+                    headers.get('X-AJAX-Update')
+                );
+            });
+
+            it('should build the request based on the form', function () {
+                const form = element.querySelector('form');
+
+                submitForm(form);
+                const fetchArgs = fetch.firstCall.args;
+
+                assert.equal(
+                    form.action,
+                    fetchArgs[0],
+                    'The form action URL should have been requested'
+                );
+                assert.equal(
+                    form.method,
+                    fetchArgs[1].method,
+                    'The form method should be the request method'
+                );
+                assert.strictEqual(
+                    FormData.firstCall.args[0],
+                    form
+                );
+            });
+
+            function testSubmitWithClick(form, button) {
+                element.addEventListener('click', function (e) {
+                    // in Edge and Safari, simulating a click on the button
+                    // triggers the form submit while that's not the case in
+                    // Firefox nor Chrome. So this event handler is there to
+                    // prevent this behavior in Edge and Safari, so that the
+                    // form submit happens because of `submitForm` call.
+                    e.preventDefault();
+                });
+                simulateClick(button);
+                submitForm(form);
+                const appendArgs = formDataAppend.firstCall.args;
+
+                assert.equal(
+                    button.name,
+                    appendArgs[0]
+                );
+                assert.equal(
+                    button.value,
+                    appendArgs[1]
+                );
+            }
+
+            it('should add the clicked button to the form data', function () {
+                const form = element.querySelector('form');
+
+                testSubmitWithClick.call(this, form, form.querySelector('button'));
+            });
+
+            it('should add the clicked submit input to the form data', function () {
+                const form = element.querySelector('form');
+
+                testSubmitWithClick.call(this, form, form.querySelector('input[type="submit"]'));
+            });
+
+            it('should add the clicked image input to the form data', function () {
+                const form = element.querySelector('form');
+
+                testSubmitWithClick.call(this, form, form.querySelector('input[type="image"]'));
+            });
+
+            it('should update the History', function (done) {
+                const initialState = history.state;
+                const form = element.querySelector('form');
+                const check = function () {
+                    element.removeEventListener('ez:app:updated', check);
+                    assert.notStrictEqual(
+                        initialState, history.state,
+                        'The history state should have been changed'
+                    );
+                    assert.isTrue(
+                        history.state.enhanced,
+                        'The history state should be `enhanced`'
+                    );
+                    assert.isTrue(
+                        historyReplace.called,
+                        'The state should have been replaced'
+                    );
+                    done();
+                };
+
+                element.addEventListener('ez:app:updated', check);
+                submitForm(form);
+            });
+        });
+
+        describe('error handling', function () {
+            it('should handle a JSON decode error', function (done) {
+                const observer = new MutationObserver(function () {
+                    assert.isFalse(
+                        element.updating,
+                        '`updating` should have been set back to false`'
+                    );
+                    observer.disconnect();
+                    done();
+                });
+
+                element.url = urlInvalidJson;
+                observer.observe(element, {
+                    attributes: true,
+                    attributeFilter: ['updating'],
+                });
+            });
         });
     });
 
@@ -274,14 +474,34 @@ describe('ez-platform-ui-app', function() {
 
     describe('AJAX update', function () {
         describe('request', function () {
-            beforeEach(function () {
+            function mockFetchResponse() {
                 const response = new Response('{}');
 
                 this.fetch = sinon.stub(window, 'fetch', function () {
                     return Promise.resolve(response);
                 });
 
-                element.url = '/whatever';
+                element.url = this.initialUrl;
+            }
+
+            function mockFetchResponseRedirect() {
+                const response = {
+                    url: this.redirectUrl,
+                    json: function () {
+                        return {};
+                    },
+                };
+
+                this.fetch = sinon.stub(window, 'fetch', function () {
+                    return Promise.resolve(response);
+                });
+
+                element.url = this.initialUrl;
+            }
+
+            beforeEach(function () {
+                this.initialUrl = '/whatever';
+                this.redirectUrl = '/redirected';
             });
 
             afterEach(function () {
@@ -289,6 +509,7 @@ describe('ez-platform-ui-app', function() {
             });
 
             it('should request the url', function () {
+                mockFetchResponse.apply(this);
                 assert.equal(
                     element.url,
                     this.fetch.firstCall.args[0]
@@ -296,12 +517,25 @@ describe('ez-platform-ui-app', function() {
             });
 
             it('should have the X-AJAX-Update header', function () {
+                mockFetchResponse.apply(this);
                 const headers = this.fetch.firstCall.args[1].headers;
 
                 assert.equal(
                     '1',
                     headers.get('X-AJAX-Update')
                 );
+            });
+
+            it('should handle redirect', function (done) {
+                mockFetchResponseRedirect.apply(this);
+
+                element.addEventListener('ez:app:updated', () => {
+                    assert.equal(
+                        this.redirectUrl,
+                        element.url
+                    );
+                    done();
+                });
             });
         });
 

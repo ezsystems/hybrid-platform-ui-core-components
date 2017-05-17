@@ -1,17 +1,4 @@
 (function () {
-    function fetchUpdateStruct(updateUrl) {
-        const headers = new Headers({
-            'X-AJAX-Update': '1',
-        });
-
-        return fetch(updateUrl, {
-            credentials: 'same-origin',
-            headers: headers,
-        }).then(function (response) {
-            return response.json();
-        });
-    }
-
     function updateElement(element, updateStruct) {
         if ( typeof updateStruct === 'string' ) {
             // this replaces element.outerHTML = updateStruct;
@@ -97,7 +84,7 @@
                     type: String,
                     reflectToAttribute: true,
                     value: location.href,
-                    observer: '_update',
+                    observer: '_triggerUpdate',
                 },
             };
         }
@@ -117,31 +104,111 @@
         }
 
         /**
-         * Runs the update process by fetching the `updateUrl`. It's an observer
-         * of the `url` property.
+         * Runs the update process if needed after the update of the `url`
+         * property. It's an observer of the `url` property.
          *
          * @param {String} updateUrl
          * @param {String} oldUrl
          */
-        _update(updateUrl, oldUrl) {
+        _triggerUpdate(updateUrl, oldUrl) {
             if ( !oldUrl ) {
                 // initial dispatch, no need for an update
                 return;
             }
+            if ( this.updating ) {
+                // update of the URL after a redirect, so we don't retrigger
+                // an AJAX request since we are in the middle of a request
+                return;
+            }
+            this._update(updateUrl);
+        }
+
+
+        /**
+         * Runs an AJAX request and updates the app with the given update
+         * struct.
+         *
+         * @param {String|HTMLFormElement} update either an URL to fetch or an
+         * HTMLFormElement to submit
+         */
+        _update(update) {
+            const fetchOptions = {
+                credentials: 'same-origin',
+                headers: new Headers({
+                    'X-AJAX-Update': '1',
+                }),
+                redirect: 'follow',
+            };
+            let url = update;
+
+            if ( update instanceof HTMLFormElement ) {
+                url = update.action;
+                // FIXME
+                // this is only valid for GET form
+                fetchOptions.body = new FormData(update);
+                fetchOptions.method = update.method;
+                if ( this._formButton ) {
+                    fetchOptions.body.append(this._formButton.name, this._formButton.value);
+                    delete this._formButton;
+                }
+            }
+
             this.updating = true;
 
-            fetchUpdateStruct(updateUrl)
+            fetch(url, fetchOptions)
+                .then(this._checkRedirection.bind(this, url))
+                .then((response) => response.json())
                 .then(this._updateApp.bind(this))
-                .then((struct) => {
-                    if ( !this._fromHistory ) {
-                        this._pushHistory();
-                    }
-                    delete this._fromHistory;
+                .then(this._endUpdate.bind(this, (fetchOptions.method === 'post')))
+                .catch((error) => {
                     this.updating = false;
-                    this._fireUpdated(updateUrl, struct);
 
-                    return struct;
+                    // FIXME
+                    // https://jira.ez.no/browse/EZP-27374
+                    // proper error handling
+                    // this includes checking HTTP status code (>= 400) but also
+                    // handling connection error and JSON decode issues as well.
+                    console.error('Error fetching update', url, fetchOptions, error);
                 });
+        }
+
+        /**
+         * Ends the update process. It makes sure the History is correctly
+         * updated, it also sets `updating` to false and fire the updated event
+         * to signal the very end of the update process.
+         *
+         * @param {Boolean} isPost
+         * @param {Object} struct
+         * @return {Object}
+         */
+        _endUpdate(isPost, struct) {
+            if ( isPost ) {
+                this._replaceHistory();
+            } else if ( !this._fromHistory ) {
+                this._pushHistory();
+            }
+            delete this._fromHistory;
+
+            this.updating = false;
+            this._fireUpdated();
+
+            return struct;
+        }
+
+        /**
+         * Checks whether the server redirected to a new URL. If yes, it updates
+         * the `url` property to keep it in sync with the actual app state.
+         *
+         * @param {String} requestUrl
+         * @param {Response} response
+         * @return {Response}
+         */
+        _checkRedirection(requestUrl, response) {
+            if ( !response.url.endsWith(requestUrl) ) {
+                this.url = response.url;
+            }
+
+            return response;
         }
 
         /**
@@ -172,6 +239,17 @@
         }
 
         /**
+         * Replaces the current History state with a new one.
+         */
+        _replaceHistory() {
+            history.replaceState(
+                {url: this.url, enhanced: true},
+                this.title,
+                this.url
+            );
+        }
+
+        /**
          * Updates the app from the given `updateStruct` structure.
          *
          * @param {Object} updateStruct
@@ -190,7 +268,17 @@
                 if ( PlatformUiApp._isNavigationLink(anchor) ) {
                     e.preventDefault();
                     this.url = anchor.href;
+                } else if ( PlatformUiApp._isSubmitButton(e.target) ) {
+                    this._formButton = e.target;
                 }
+            });
+            this.addEventListener('submit', (e) => {
+                // FIXME:
+                // like the navigation, it should be possible to opt out from
+                // that "enhanced" behaviour for instance by setting a class on
+                // the form itself or one of its ancestors.
+                e.preventDefault();
+                this._update(e.target);
             });
             this._popstateHandler = (e) => {
                 this._goBackToState(e.state);
@@ -228,6 +316,17 @@
             // FIXME: we should probably further check the URI (same origin ?)
             // we should also allow to opt out from that with a class
             return anchor && anchor.href && anchor.getAttribute('href').indexOf('#') !== 0;
+        }
+
+        /**
+         * Checks whether the given `element` is a form submit button.
+         *
+         * @param {HTMLElement} element
+         * @static
+         * @return {Boolean}
+         */
+        static _isSubmitButton(element) {
+            return element && element.matches('form input[type="submit"], form button, form input[type="image"]');
         }
     }
 
