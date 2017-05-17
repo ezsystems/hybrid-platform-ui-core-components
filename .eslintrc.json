@@ -59,10 +59,7 @@
             "property"
         ],
         "dot-notation": [
-            "error",
-            {
-                "allowKeywords": false
-            }
+            "error"
         ],
         "eol-last": "off",
         "eqeqeq": "off",
