@@ -36,7 +36,39 @@
      * `<ez-platform-ui-app>` represents the application in a page which will
      * enhance the navigation by avoiding full page refresh. It is responsible
      * for handling click on links and form submit and for fetching and applying
-     * the corresponding update.
+     * the corresponding update. It also manipulates the browser's history so
+     * that the back and forward buttons works as expected. A large part of this
+     * mechanism relies on the server ability to render the page as a JSON
+     * update struct and that's why it's possible opt out from it.
+     *
+     * If a link has the class `ez-js-standard-navigation` or if it has an
+     * ancestor having that class, the app will just let the navigation happen.
+     * (or let another JavaScript code to handle click on such link)
+     *
+     * Example:
+     * ```
+     * <ul class="ez-js-standard-navigation">
+     *   <li><a href="/">This link won't be enhanced</a></li>
+     *   <li><a href="/path">Same for this one</a>
+     * </ul>
+     * <a href="/path2" class="ez-js-standard-navigation">Or this one</a>
+     * ```
+     *
+     * For forms, the class `ez-js-standard-form` set on a form or on an
+     * ancestor of a form allows the form to be submitted normally (or let
+     * another JavaScript code to handle form submit).
+     *
+     * Example:
+     * ```
+     * <form action="/whatever" class="ez-js-standard-form">
+     *   <input type="text" name="something" value="the app ignores me!">
+     * </form>
+     * <div class="ez-js-standard-form">
+     *   <form action="/whatever">
+     *     <input type="text" name="name" value="the app ignores me as well!">
+     *   </form>
+     * </div>
+     * ```
      *
      * Among others standard APIs, this component relies on `fetch` and
      * `Element.closest`. `fetch` is not supported by Safari 10.0 and
