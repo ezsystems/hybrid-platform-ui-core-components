@@ -42,8 +42,16 @@
                     Navigation
                 </nav>
                 <main>
+                    <h4>Simple link</h4>
                     <p>default main content</p>
                     <p><a href="update1.json">Update 1</a></p>
+
+                    <hr>
+                    <h4>Form (only GET, polyserve does not support POST)</h4>
+                    <form action="update1.json" method="get">
+                        <input type="hidden" name="hidden" value="I'm hidden">
+                        <button name="apply">Apply the update 1</button>
+                    </form>
                 </main>
             </ez-platform-ui-app>
         </template>

@@ -171,6 +171,13 @@ describe('ez-platform-ui-app', function() {
             return click;
         }
 
+        function submitForm(form) {
+            return form.dispatchEvent(new CustomEvent('submit', {
+                bubbles: true,
+                cancelable: true,
+            }));
+        }
+
         function assertEventIgnored(event, element, expectedUrl) {
             assert.notOk(
                 event.defaultPrevented,
@@ -245,17 +252,10 @@ describe('ez-platform-ui-app', function() {
             });
         });
 
-        describe('form', function () {
+        describe('form (POST)', function () {
             let fetch;
             let formDataAppend;
             let historyReplace;
-
-            function submitForm(form) {
-                return form.dispatchEvent(new CustomEvent('submit', {
-                    bubbles: true,
-                    cancelable: true,
-                }));
-            }
 
             beforeEach(function () {
                 const FormDataOriginal = window.FormData;
@@ -286,7 +286,7 @@ describe('ez-platform-ui-app', function() {
             });
 
             it('should submit form in AJAX', function () {
-                const form = element.querySelector('form');
+                const form = element.querySelector('form[method="post"]');
                 const kept = submitForm(form);
                 const headers = fetch.firstCall.args[1].headers;
 
@@ -305,7 +305,7 @@ describe('ez-platform-ui-app', function() {
             });
 
             it('should build the request based on the form', function () {
-                const form = element.querySelector('form');
+                const form = element.querySelector('form[method="post"]');
 
                 submitForm(form);
                 const fetchArgs = fetch.firstCall.args;
@@ -350,26 +350,26 @@ describe('ez-platform-ui-app', function() {
             }
 
             it('should add the clicked button to the form data', function () {
-                const form = element.querySelector('form');
+                const form = element.querySelector('form[method="post"]');
 
                 testSubmitWithClick.call(this, form, form.querySelector('button'));
             });
 
             it('should add the clicked submit input to the form data', function () {
-                const form = element.querySelector('form');
+                const form = element.querySelector('form[method="post"]');
 
                 testSubmitWithClick.call(this, form, form.querySelector('input[type="submit"]'));
             });
 
             it('should add the clicked image input to the form data', function () {
-                const form = element.querySelector('form');
+                const form = element.querySelector('form[method="post"]');
 
                 testSubmitWithClick.call(this, form, form.querySelector('input[type="image"]'));
             });
 
             it('should update the History', function (done) {
                 const initialState = history.state;
-                const form = element.querySelector('form');
+                const form = element.querySelector('form[method="post"]');
                 const check = function () {
                     element.removeEventListener('ez:app:updated', check);
                     assert.notStrictEqual(
@@ -388,6 +388,47 @@ describe('ez-platform-ui-app', function() {
                 };
 
                 element.addEventListener('ez:app:updated', check);
+                submitForm(form);
+            });
+        });
+
+        describe('form (GET)', function () {
+            const expectedUrl = '/test/responses/set-data-updated-attr.json?radio=radio&checked=checked&checked-no-value=on&select-one=option&select-multiple=option2&simple=simple&';
+
+            beforeEach(function () {
+                element.addEventListener('click', function (e) {
+                    // in Edge and Safari, simulating a click on the button
+                    // triggers the form submit while that's not the case in
+                    // Firefox nor Chrome. So this event handler is there to
+                    // prevent this behavior in Edge and Safari, so that the
+                    // form submit happens because of `submitForm` call.
+                    e.preventDefault();
+                });
+            });
+
+            it('should navigate to the corresponding URL', function (done) {
+                const form = element.querySelector('form[method="get"]');
+                const check = function () {
+                    element.removeEventListener('ez:app:updated', check);
+                    assert.ok(element.url.endsWith(expectedUrl));
+                    done();
+                };
+
+                element.addEventListener('ez:app:updated', check);
+                submitForm(form);
+            });
+
+            it('should navigate to the corresponding URL when submitted with a button', function (done) {
+                const form = element.querySelector('form[method="get"]');
+                const button = form.querySelector('button');
+                const check = function () {
+                    element.removeEventListener('ez:app:updated', check);
+                    assert.ok(element.url.endsWith(expectedUrl + 'submit=&'));
+                    done();
+                };
+
+                element.addEventListener('ez:app:updated', check);
+                simulateClick(button);
                 submitForm(form);
             });
         });

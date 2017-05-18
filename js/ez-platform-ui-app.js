@@ -125,11 +125,11 @@
 
 
         /**
-         * Runs an AJAX request and updates the app with the given update
-         * struct.
+         * Runs an AJAX request and updates the app with the given update url or
+         * form.
          *
          * @param {String|HTMLFormElement} update either an URL to fetch or an
-         * HTMLFormElement to submit
+         * HTMLFormElement (POST) to submit
          */
         _update(update) {
             const fetchOptions = {
@@ -142,15 +142,14 @@
             let url = update;
 
             if ( update instanceof HTMLFormElement ) {
+                const data = new FormData(update);
+
                 url = update.action;
-                // FIXME
-                // this is only valid for GET form
-                fetchOptions.body = new FormData(update);
                 fetchOptions.method = update.method;
                 if ( this._formButton ) {
-                    fetchOptions.body.append(this._formButton.name, this._formButton.value);
-                    delete this._formButton;
+                    data.append(this._formButton.name, this._formButton.value);
                 }
+                fetchOptions.body = data;
             }
 
             this.updating = true;
@@ -259,7 +258,8 @@
         }
 
         /**
-         * Enhances the navigation by handling clicks on link and back button.
+         * Enhances the navigation by handling clicks on link, back button and
+         * form submit.
          */
         _enhanceNavigation() {
             this.addEventListener('click', (e) => {
@@ -273,12 +273,20 @@
                 }
             });
             this.addEventListener('submit', (e) => {
+                const form = e.target;
+
                 // FIXME:
                 // like the navigation, it should be possible to opt out from
                 // that "enhanced" behaviour for instance by setting a class on
                 // the form itself or one of its ancestors.
                 e.preventDefault();
-                this._update(e.target);
+                if ( form.method === 'get' ) {
+                    // submitting a GET form is like browsing
+                    this.url = PlatformUiApp._buildFormUrl(form, this._formButton);
+                } else {
+                    this._update(form);
+                }
+                delete this._formButton;
             });
             this._popstateHandler = (e) => {
                 this._goBackToState(e.state);
@@ -327,6 +335,75 @@
          */
         static _isSubmitButton(element) {
             return element && element.matches('form input[type="submit"], form button, form input[type="image"]');
+        }
+
+        /**
+         * Builds the URL corresponding for the given GET `form` optionally
+         * submitted with `submitButton`.
+         *
+         * @param {HTMLFormElement} form
+         * @param {HTMLButtonElement|HTMLInputElement} [submitButton]
+         * @static
+         * @return {String}
+         */
+        static _buildFormUrl(form, submitButton) {
+            // not using FormData because Safari 10.0 and Edge have an old
+            // version which does not allow to retrieve actual data but even
+            // with FormData, this is not trivial.
+            const values = {};
+            let url = form.action + '?';
+
+            for (let i = 0; i != form.elements.length; i++) {
+                const element = form.elements[i];
+                const name = element.name;
+
+                if ( !element.disabled ) {
+                    switch (element.type) {
+                        case 'button':
+                        case 'reset':
+                        case 'submit':
+                            break;
+                        case 'checkbox':
+                            if ( element.checked ) {
+                                values[name] = element.value || 'on';
+                            }
+                            break;
+                        case 'radio':
+                            if ( element.checked ) {
+                                values[name] = element.value;
+                            }
+                            break;
+                        case 'select-one':
+                            if ( element.selectedIndex !== -1 ) {
+                                values[name] = element.options[element.selectedIndex].value;
+                            }
+                            break;
+                        case 'select-multiple':
+                            Array.prototype.forEach.apply(element.options, function (option) {
+                                if ( option.selected ) {
+                                    values[name] = values[name] || [];
+                                    values[name].push(option.value);
+                                }
+                            });
+                            break;
+                        default:
+                            values[name] = element.value;
+                    }
+                }
+            }
+            if ( submitButton ) {
+                values[submitButton.name] = submitButton.value;
+            }
+            Object.keys(values).forEach(function (key) {
+                if ( Array.isArray(values[key]) ) {
+                    values[key].forEach(function (value) {
+                        url += `${key}[]=${value}&`;
+                    });
+                } else {
+                    url += `${key}=${values[key]}&`;
+                }
+            });
+            return url;
         }
     }
 
