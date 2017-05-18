@@ -265,7 +265,7 @@
             this.addEventListener('click', (e) => {
                 const anchor = e.target.closest('a');
 
-                if ( PlatformUiApp._isNavigationLink(anchor) ) {
+                if ( PlatformUiApp._isEnhancedNavigationLink(anchor) ) {
                     e.preventDefault();
                     this.url = anchor.href;
                 } else if ( PlatformUiApp._isSubmitButton(e.target) && PlatformUiApp._isInsideEnhancedForm(e.target) ) {
@@ -319,10 +319,14 @@
          * @static
          * @return {Boolean}
          */
-        static _isNavigationLink(anchor) {
+        static _isEnhancedNavigationLink(anchor) {
             // FIXME: we should probably further check the URI (same origin ?)
-            // we should also allow to opt out from that with a class
-            return anchor && anchor.href && anchor.getAttribute('href').indexOf('#') !== 0;
+            return (
+                anchor &&
+                anchor.href &&
+                anchor.getAttribute('href').indexOf('#') !== 0 &&
+                !anchor.matches('.ez-js-standard-navigation, .ez-js-standard-navigation a')
+            );
         }
 
         /**

@@ -195,6 +195,10 @@ describe('ez-platform-ui-app', function() {
             );
         }
 
+        function prevent(e) {
+            e.preventDefault();
+        }
+
         describe('navigation', function () {
             it('should handle click on regular link', function () {
                 const link = element.querySelector('.enhanced-link');
@@ -243,6 +247,42 @@ describe('ez-platform-ui-app', function() {
 
                 assertEventIgnored(event, element, initialUrl);
             });
+
+            describe('opt out', function () {
+                beforeEach(function () {
+                    document.addEventListener('click', prevent);
+                });
+
+                afterEach(function () {
+                    document.removeEventListener('click', prevent);
+                });
+
+                function testIgnoredLink(selector) {
+                    const link = element.querySelector(selector);
+
+                    element.addEventListener('click', function (e) {
+                        assert.isFalse(
+                            e.defaultPrevented,
+                            'The click event should not be prevented'
+                        );
+                    });
+                    simulateClick(link);
+
+                    assert.notEqual(
+                        link.href,
+                        element.url,
+                        'The app should not navigate the link url'
+                    );
+                }
+
+                it('should ignore click on links having the ez-js-standard-navigation class', function () {
+                    testIgnoredLink('a.ez-js-standard-navigation');
+                });
+
+                it('should ignore click on links having an ancestor with the ez-js-standard-navigation class', function () {
+                    testIgnoredLink('.ez-js-standard-navigation a');
+                });
+            });
         });
 
         describe('form', function () {
@@ -265,10 +305,6 @@ describe('ez-platform-ui-app', function() {
             });
 
             describe('opt out', function () {
-                function prevent(e) {
-                    e.preventDefault();
-                }
-
                 beforeEach(function () {
                     document.addEventListener('submit', prevent);
                 });
