@@ -35,8 +35,8 @@
     /**
      * `<ez-platform-ui-app>` represents the application in a page which will
      * enhance the navigation by avoiding full page refresh. It is responsible
-     * for handling click on links and for fetching and applying the
-     * corresponding update.
+     * for handling click on links and form submit and for fetching and applying
+     * the corresponding update.
      *
      * Among others standard APIs, this component relies on `fetch` and
      * `Element.closest`. `fetch` is not supported by Safari 10.0 and
@@ -268,17 +268,16 @@
                 if ( PlatformUiApp._isNavigationLink(anchor) ) {
                     e.preventDefault();
                     this.url = anchor.href;
-                } else if ( PlatformUiApp._isSubmitButton(e.target) ) {
+                } else if ( PlatformUiApp._isSubmitButton(e.target) && PlatformUiApp._isInsideEnhancedForm(e.target) ) {
                     this._formButton = e.target;
                 }
             });
             this.addEventListener('submit', (e) => {
                 const form = e.target;
 
-                // FIXME:
-                // like the navigation, it should be possible to opt out from
-                // that "enhanced" behaviour for instance by setting a class on
-                // the form itself or one of its ancestors.
+                if ( !PlatformUiApp._isInsideEnhancedForm(form) ) {
+                    return;
+                }
                 e.preventDefault();
                 if ( form.method === 'get' ) {
                     // submitting a GET form is like browsing
@@ -335,6 +334,22 @@
          */
         static _isSubmitButton(element) {
             return element && element.matches('form input[type="submit"], form button, form input[type="image"]');
+        }
+
+        /**
+         * Checks whether the given `element` is inside (or is) a form that is
+         * supposed to be enhanced (ie submitted by AJAX). To not be enhanced
+         * the form or one of its ancestor must have the `ez-js-standard-form`
+         * class.
+         *
+         * @param {HTMLElement} element
+         * @static
+         * @return {Boolean}
+         */
+        static _isInsideEnhancedForm(element) {
+            const form = element.closest('form');
+
+            return !form || !form.matches('.ez-js-standard-form, .ez-js-standard-form form');
         }
 
         /**

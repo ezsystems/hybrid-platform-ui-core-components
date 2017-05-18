@@ -171,13 +171,6 @@ describe('ez-platform-ui-app', function() {
             return click;
         }
 
-        function submitForm(form) {
-            return form.dispatchEvent(new CustomEvent('submit', {
-                bubbles: true,
-                cancelable: true,
-            }));
-        }
-
         function assertEventIgnored(event, element, expectedUrl) {
             assert.notOk(
                 event.defaultPrevented,
@@ -252,149 +245,14 @@ describe('ez-platform-ui-app', function() {
             });
         });
 
-        describe('form (POST)', function () {
-            let fetch;
-            let formDataAppend;
-            let historyReplace;
-
-            beforeEach(function () {
-                const FormDataOriginal = window.FormData;
-                const response = new Response('{}');
-
-                // https://github.com/Polymer/polyserve/issues/197
-                // Web Component Tester internal server does not support POST
-                // request, we are forced to stub `fetch` to simulate a POST
-                // request.
-                fetch = sinon.stub(window, 'fetch', function () {
-                    return Promise.resolve(response);
-                });
-                sinon.stub(window, 'FormData', (form) => {
-                    const fd = new FormDataOriginal(form);
-
-                    formDataAppend = sinon.spy(fd, 'append');
-
-                    return fd;
-                });
-                historyReplace = sinon.spy(history, 'replaceState');
-            });
-
-            afterEach(function () {
-                fetch.restore();
-                formDataAppend.restore();
-                FormData.restore();
-                historyReplace.restore();
-            });
-
-            it('should submit form in AJAX', function () {
-                const form = element.querySelector('form[method="post"]');
-                const kept = submitForm(form);
-                const headers = fetch.firstCall.args[1].headers;
-
-                assert.isFalse(
-                    kept,
-                    'The `submit` event should have been prevented'
-                );
-                assert.isTrue(
-                    fetch.calledOnce,
-                    'An AJAX request should have been triggered'
-                );
-                assert.equal(
-                    '1',
-                    headers.get('X-AJAX-Update')
-                );
-            });
-
-            it('should build the request based on the form', function () {
-                const form = element.querySelector('form[method="post"]');
-
-                submitForm(form);
-                const fetchArgs = fetch.firstCall.args;
-
-                assert.equal(
-                    form.action,
-                    fetchArgs[0],
-                    'The form action URL should have been requested'
-                );
-                assert.equal(
-                    form.method,
-                    fetchArgs[1].method,
-                    'The form method should be the request method'
-                );
-                assert.strictEqual(
-                    FormData.firstCall.args[0],
-                    form
-                );
-            });
-
-            function testSubmitWithClick(form, button) {
-                element.addEventListener('click', function (e) {
-                    // in Edge and Safari, simulating a click on the button
-                    // triggers the form submit while that's not the case in
-                    // Firefox nor Chrome. So this event handler is there to
-                    // prevent this behavior in Edge and Safari, so that the
-                    // form submit happens because of `submitForm` call.
-                    e.preventDefault();
-                });
-                simulateClick(button);
-                submitForm(form);
-                const appendArgs = formDataAppend.firstCall.args;
-
-                assert.equal(
-                    button.name,
-                    appendArgs[0]
-                );
-                assert.equal(
-                    button.value,
-                    appendArgs[1]
-                );
+        describe('form', function () {
+            function submitForm(form) {
+                return form.dispatchEvent(new CustomEvent('submit', {
+                    bubbles: true,
+                    cancelable: true,
+                }));
             }
 
-            it('should add the clicked button to the form data', function () {
-                const form = element.querySelector('form[method="post"]');
-
-                testSubmitWithClick.call(this, form, form.querySelector('button'));
-            });
-
-            it('should add the clicked submit input to the form data', function () {
-                const form = element.querySelector('form[method="post"]');
-
-                testSubmitWithClick.call(this, form, form.querySelector('input[type="submit"]'));
-            });
-
-            it('should add the clicked image input to the form data', function () {
-                const form = element.querySelector('form[method="post"]');
-
-                testSubmitWithClick.call(this, form, form.querySelector('input[type="image"]'));
-            });
-
-            it('should update the History', function (done) {
-                const initialState = history.state;
-                const form = element.querySelector('form[method="post"]');
-                const check = function () {
-                    element.removeEventListener('ez:app:updated', check);
-                    assert.notStrictEqual(
-                        initialState, history.state,
-                        'The history state should have been changed'
-                    );
-                    assert.isTrue(
-                        history.state.enhanced,
-                        'The history state should be `enhanced`'
-                    );
-                    assert.isTrue(
-                        historyReplace.called,
-                        'The state should have been replaced'
-                    );
-                    done();
-                };
-
-                element.addEventListener('ez:app:updated', check);
-                submitForm(form);
-            });
-        });
-
-        describe('form (GET)', function () {
-            const expectedUrl = '/test/responses/set-data-updated-attr.json?radio=radio&checked=checked&checked-no-value=on&select-one=option&select-multiple=option2&simple=simple&';
-
             beforeEach(function () {
                 element.addEventListener('click', function (e) {
                     // in Edge and Safari, simulating a click on the button
@@ -406,30 +264,205 @@ describe('ez-platform-ui-app', function() {
                 });
             });
 
-            it('should navigate to the corresponding URL', function (done) {
-                const form = element.querySelector('form[method="get"]');
-                const check = function () {
-                    element.removeEventListener('ez:app:updated', check);
-                    assert.ok(element.url.endsWith(expectedUrl));
-                    done();
-                };
+            describe('opt out', function () {
+                function prevent(e) {
+                    e.preventDefault();
+                }
 
-                element.addEventListener('ez:app:updated', check);
-                submitForm(form);
+                beforeEach(function () {
+                    document.addEventListener('submit', prevent);
+                });
+
+                afterEach(function () {
+                    document.removeEventListener('submit', prevent);
+                });
+
+                function testIgnoredForm(selector) {
+                    const form = element.querySelector(selector);
+
+                    element.addEventListener('submit', function (e) {
+                        assert.isFalse(
+                            e.defaultPrevented,
+                            'The submit event should not have been prevented'
+                        );
+                    });
+                    submitForm(form);
+                    assert.notEqual(
+                        element.url,
+                        form.action,
+                        'The submit should have been ignored by the app'
+                    );
+                }
+
+                it('should ignore form having ez-js-standard-form class', function () {
+                    testIgnoredForm('form.ez-js-standard-form');
+                });
+
+                it('should ignore form with an ancestor having ez-js-standard-form class', function () {
+                    testIgnoredForm('div.ez-js-standard-form form');
+                });
             });
 
-            it('should navigate to the corresponding URL when submitted with a button', function (done) {
-                const form = element.querySelector('form[method="get"]');
-                const button = form.querySelector('button');
-                const check = function () {
-                    element.removeEventListener('ez:app:updated', check);
-                    assert.ok(element.url.endsWith(expectedUrl + 'submit=&'));
-                    done();
-                };
+            describe('post', function () {
+                let fetch;
+                let formDataAppend;
+                let historyReplace;
 
-                element.addEventListener('ez:app:updated', check);
-                simulateClick(button);
-                submitForm(form);
+                beforeEach(function () {
+                    const FormDataOriginal = window.FormData;
+                    const response = new Response('{}');
+
+                    // https://github.com/Polymer/polyserve/issues/197
+                    // Web Component Tester internal server does not support POST
+                    // request, we are forced to stub `fetch` to simulate a POST
+                    // request.
+                    fetch = sinon.stub(window, 'fetch', function () {
+                        return Promise.resolve(response);
+                    });
+                    sinon.stub(window, 'FormData', (form) => {
+                        const fd = new FormDataOriginal(form);
+
+                        formDataAppend = sinon.spy(fd, 'append');
+
+                        return fd;
+                    });
+                    historyReplace = sinon.spy(history, 'replaceState');
+                });
+
+                afterEach(function () {
+                    fetch.restore();
+                    formDataAppend.restore();
+                    FormData.restore();
+                    historyReplace.restore();
+                });
+
+                it('should submit form in AJAX', function () {
+                    const form = element.querySelector('form[method="post"]');
+                    const kept = submitForm(form);
+                    const headers = fetch.firstCall.args[1].headers;
+
+                    assert.isFalse(
+                        kept,
+                        'The `submit` event should have been prevented'
+                    );
+                    assert.isTrue(
+                        fetch.calledOnce,
+                        'An AJAX request should have been triggered'
+                    );
+                    assert.equal(
+                        '1',
+                        headers.get('X-AJAX-Update')
+                    );
+                });
+
+                it('should build the request based on the form', function () {
+                    const form = element.querySelector('form[method="post"]');
+
+                    submitForm(form);
+                    const fetchArgs = fetch.firstCall.args;
+
+                    assert.equal(
+                        form.action,
+                        fetchArgs[0],
+                        'The form action URL should have been requested'
+                    );
+                    assert.equal(
+                        form.method,
+                        fetchArgs[1].method,
+                        'The form method should be the request method'
+                    );
+                    assert.strictEqual(
+                        FormData.firstCall.args[0],
+                        form
+                    );
+                });
+
+                function testSubmitWithClick(form, button) {
+                    simulateClick(button);
+                    submitForm(form);
+                    const appendArgs = formDataAppend.firstCall.args;
+
+                    assert.equal(
+                        button.name,
+                        appendArgs[0]
+                    );
+                    assert.equal(
+                        button.value,
+                        appendArgs[1]
+                    );
+                }
+
+                it('should add the clicked button to the form data', function () {
+                    const form = element.querySelector('form[method="post"]');
+
+                    testSubmitWithClick.call(this, form, form.querySelector('button'));
+                });
+
+                it('should add the clicked submit input to the form data', function () {
+                    const form = element.querySelector('form[method="post"]');
+
+                    testSubmitWithClick.call(this, form, form.querySelector('input[type="submit"]'));
+                });
+
+                it('should add the clicked image input to the form data', function () {
+                    const form = element.querySelector('form[method="post"]');
+
+                    testSubmitWithClick.call(this, form, form.querySelector('input[type="image"]'));
+                });
+
+                it('should update the History', function (done) {
+                    const initialState = history.state;
+                    const form = element.querySelector('form[method="post"]');
+                    const check = function () {
+                        element.removeEventListener('ez:app:updated', check);
+                        assert.notStrictEqual(
+                            initialState, history.state,
+                            'The history state should have been changed'
+                        );
+                        assert.isTrue(
+                            history.state.enhanced,
+                            'The history state should be `enhanced`'
+                        );
+                        assert.isTrue(
+                            historyReplace.called,
+                            'The state should have been replaced'
+                        );
+                        done();
+                    };
+
+                    element.addEventListener('ez:app:updated', check);
+                    submitForm(form);
+                });
+            });
+
+            describe('get', function () {
+                const expectedUrl = '/test/responses/set-data-updated-attr.json?radio=radio&checked=checked&checked-no-value=on&select-one=option&select-multiple=option2&simple=simple&';
+
+                it('should navigate to the corresponding URL', function (done) {
+                    const form = element.querySelector('form[method="get"]');
+                    const check = function () {
+                        element.removeEventListener('ez:app:updated', check);
+                        assert.ok(element.url.endsWith(expectedUrl));
+                        done();
+                    };
+
+                    element.addEventListener('ez:app:updated', check);
+                    submitForm(form);
+                });
+
+                it('should navigate to the corresponding URL when submitted with a button', function (done) {
+                    const form = element.querySelector('form[method="get"]');
+                    const button = form.querySelector('button');
+                    const check = function () {
+                        element.removeEventListener('ez:app:updated', check);
+                        assert.ok(element.url.endsWith(expectedUrl + 'submit=&'));
+                        done();
+                    };
+
+                    element.addEventListener('ez:app:updated', check);
+                    simulateClick(button);
+                    submitForm(form);
+                });
             });
         });
 
