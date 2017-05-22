@@ -24,11 +24,11 @@ describe('ez-platform-ui-app', function() {
     });
 
     describe('properties', function () {
-        describe('`title`', function () {
+        describe('`pageTitle`', function () {
             it('should default to the document title', function () {
                 assert.equal(
                     document.title,
-                    element.title
+                    element.pageTitle
                 );
             });
 
@@ -36,20 +36,10 @@ describe('ez-platform-ui-app', function() {
                 it('should update the document title', function () {
                     const newTitle = 'Silverchair - Cicada';
 
-                    element.title = newTitle;
+                    element.pageTitle = newTitle;
                     assert.equal(
                         newTitle,
                         document.title
-                    );
-                });
-
-                it('should be reflected to an attribute', function () {
-                    const newTitle = 'Silverchair - Freak';
-
-                    element.title = newTitle;
-                    assert.equal(
-                        newTitle,
-                        element.getAttribute('title')
                     );
                 });
             });
@@ -670,7 +660,7 @@ describe('ez-platform-ui-app', function() {
             element.addEventListener('ez:app:updated', function () {
                 assert.equal(
                     'updated title',
-                    element.title,
+                    element.pageTitle,
                     'The `title` property should have been set'
                 );
                 assert.equal(
@@ -726,7 +716,7 @@ describe('ez-platform-ui-app', function() {
                 );
                 assert.equal(
                     'updated title',
-                    updated.title,
+                    updated.pageTitle,
                     'The `title` property should have been updated'
                 );
                 done();
