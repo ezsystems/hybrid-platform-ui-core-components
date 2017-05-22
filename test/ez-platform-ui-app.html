@@ -28,7 +28,46 @@
                                 <span class="deep-inside-link">Inside</span>
                             </span>
                         </a>
+                        <a class="ez-js-standard-navigation" href="/test/responses/set-data-updated-attr.json">No AJAX</a>
                     </p>
+                    <p class="ez-js-standard-navigation">
+                        <a href="/test/responses/set-data-updated-attr.json">No AJAX</a>
+                    </p>
+                    <form action="/test/responses/set-data-updated-attr.json" method="post">
+                        <input type="text" name="text" value="value">
+                        <button name="button" value="button">Button</button>
+                        <input type="submit" value="submit">
+                        <input type="image" value="image">
+                    </form>
+                    <form action="/test/responses/set-data-updated-attr.json" method="get">
+                        <button name="submit">Go</button>
+                        <input type="reset" name="reset">
+                        <input type="submit" value="ignored" name="submit">
+                        <input type="radio" value="not checked" name="radio-not-checked">
+                        <input type="radio" value="radio" name="radio" checked>
+                        <input type="checkbox" name="not-checked" value="not checked">
+                        <input type="checkbox" name="checked" value="checked" checked>
+                        <input type="checkbox" name="checked-no-value" checked>
+                        <select name="select-nothing"></select>
+                        <select name="select-one">
+                            <option value="option" selected>Selected</option>
+                            <option value="not-selected">Not selected</option>
+                        </select>
+                        <select name="select-multiple">
+                            <option value="option1" selected>Selected</option>
+                            <option value="option2" selected>Selected</option>
+                            <option value="option3">Not selected</option>
+                        </select>
+                        <input type="text" name="simple" value="simple">
+                    </form>
+                    <div class="ez-js-standard-form">
+                        <form action="/" method="get">
+                            <input type="text" value="no AJAX" name="no-ajax">
+                        </form>
+                    </div>
+                    <form action="/" method="get" class="ez-js-standard-form">
+                        <input type="text" value="no AJAX" name="no-ajax">
+                    </form>
                     <main>to be string updated</main>
                     <nav>to be receive an attribute update</nav>
                 </ez-platform-ui-app>
