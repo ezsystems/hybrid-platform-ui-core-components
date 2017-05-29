@@ -8,6 +8,7 @@
 
         <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
         <script src="../../web-component-tester/browser.js"></script>
+        <script src="../../element-matches/closest.js"></script><!-- for Edge 14 -->
 
         <link rel="import" href="../ez-navigation-hub.html">
     </head>
@@ -15,10 +16,26 @@
 
         <test-fixture id="BasicTestFixture">
             <template>
-                <ez-navigation-hub></ez-navigation-hub>
+                <ez-navigation-hub>
+                  <ul class="zone-list">
+                        <li data-zone-identifier="contents">
+                            <a href="#">contents</a>
+                        </li>
+                        <li data-zone-identifier="other">
+                            <a href="#">other</a>
+                        </li>
+                  </ul>
+                  <ul class="ez-navigation">
+                      <li data-zone="contents" class="ez-zone-link">
+                          <a href="url1">link 1</a>
+                      </li>
+                      <li data-zone="other" class="ez-zone-link">
+                          <a href="url2">link 2</a>
+                      </li>
+                  </ul>
+                </ez-navigation-hub>
             </template>
         </test-fixture>
-
         <script src="js/ez-navigation-hub.js"></script>
     </body>
 </html>
