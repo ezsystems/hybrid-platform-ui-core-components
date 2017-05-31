@@ -100,9 +100,8 @@
                  * Title of the app page. It is the page title by default and
                  * changes are reflected to the page title as well.
                  */
-                title: {
+                pageTitle: {
                     type: String,
-                    reflectToAttribute: true,
                     value: document.title,
                     observer: '_setPageTitle',
                 },
@@ -127,7 +126,7 @@
         }
 
         /**
-         * Sets the page title. It's an observer of the `title` property.
+         * Sets the page title. It's an observer of the `pageTitle` property.
          *
          * @param {String} newValue
          */
@@ -264,7 +263,7 @@
         _pushHistory() {
             history.pushState(
                 {url: this.url, enhanced: true},
-                this.title,
+                this.pageTitle,
                 this.url
             );
         }
@@ -275,7 +274,7 @@
         _replaceHistory() {
             history.replaceState(
                 {url: this.url, enhanced: true},
-                this.title,
+                this.pageTitle,
                 this.url
             );
         }

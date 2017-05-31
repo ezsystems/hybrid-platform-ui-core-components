@@ -2,7 +2,7 @@
     "selector": "ez-platform-ui-app",
     "update": {
         "properties": {
-            "title": "updated title",
+            "pageTitle": "updated title",
             "lang": "updated lang"
         }
     }

@@ -6,7 +6,7 @@
             "update": {
                 "properties": {
                     "innerHTML": "updated content",
-                    "title": "updated title"
+                    "pageTitle": "updated title"
                 }
             }
         }]

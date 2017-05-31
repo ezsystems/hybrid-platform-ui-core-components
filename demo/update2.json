@@ -1,8 +1,8 @@
 {
     "selector": "ez-platform-ui-app",
     "update": {
-        "attributes": {
-            "title": "Update 2 with update2.json"
+        "properties": {
+            "pageTitle": "Update 1 with update1.json"
         },
         "children": [
             {
