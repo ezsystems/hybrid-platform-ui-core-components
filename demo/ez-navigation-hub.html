@@ -7,12 +7,20 @@
     <title>ez-navigation-hub demo</title>
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../element-matches/closest.js"></script><!-- for Edge 14 -->
 
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../ez-navigation-hub.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
+        ez-navigation-hub .ez-active-zone {
+            background: #ddd;
+        }
+
+        ez-navigation-hub .ez-matched-link {
+            border-bottom: 2px solid grey;
+        }
     </style>
   </head>
   <body>
@@ -20,7 +28,36 @@
       <h3>Basic ez-navigation-hub demo</h3>
       <demo-snippet>
         <template>
-          <ez-navigation-hub></ez-navigation-hub>
+          <ez-navigation-hub>
+            <ul class="zone-list">
+                <li data-zone-identifier="1">
+                    <a href="#">zone1</a>
+                </li>
+                <li data-zone-identifier="2">
+                    <a href="#">zone2</a>
+                </li>
+            </ul>
+            <ul class="ez-navigation">
+               <li data-zone="1" class="ez-zone-link">
+                   <a href="url1.0">link 1.0</a>
+               </li>
+               <li data-zone="1" class="ez-zone-link">
+                   <a href="url1.1">link 1.1</a>
+               </li>
+               <li data-zone="2" class="ez-zone-link">
+                   <a href="url2.0">link 2.0</a>
+               </li>
+               <li data-zone="2" class="ez-zone-link">
+                   <a href="url2.1">link 2.1</a>
+               </li>
+            </ul>
+          </ez-navigation-hub>
+          <button onclick="document.querySelector('ez-navigation-hub').matchedLinkUrl = 'url1.0'">
+              Simulate click on link 1.0
+          </button>
+          <button onclick="document.querySelector('ez-navigation-hub').matchedLinkUrl = 'url2.1'">
+              Simulate click on link 2.1
+          </button>
         </template>
       </demo-snippet>
     </div>
