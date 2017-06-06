@@ -60,6 +60,20 @@
                     this.activeZone = e.target.parentNode.getAttribute('data-zone-identifier');
                 }
             });
+            Polymer.RenderStatus.afterNextRender(this, function () {
+                this._updateActiveZone(this.activeZone, undefined);
+                this._highlightLink(this.matchedLinkUrl, undefined);
+            });
+        }
+
+        /**
+         * Checks whether the element has child elements. This is useful to
+         * check if the DOM has been distributed before applying changes.
+         *
+         * @return {Boolean}
+         */
+        _hasContent() {
+            return this.childElementCount;
         }
 
         /**
@@ -70,6 +84,9 @@
          * @param {String} oldValue
          */
         _updateActiveZone(newValue, oldValue) {
+            if ( !this._hasContent() ) {
+                return;
+            }
             this._highlightZone(oldValue, newValue);
             this._updateNavigation(oldValue, newValue);
         }
@@ -149,6 +166,9 @@
          * @param {String} oldUrl
          */
         _highlightLink(newUrl, oldUrl) {
+            if ( !this._hasContent() ) {
+                return;
+            }
             if ( oldUrl ) {
                 this._getItemByUrl(oldUrl).classList.remove(this.matchedLinkClass);
             }
