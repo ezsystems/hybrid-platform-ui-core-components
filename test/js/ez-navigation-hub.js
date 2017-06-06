@@ -69,6 +69,8 @@ describe('ez-navigation-hub', function() {
     });
 
     describe('active zone update', function () {
+        let emptyElement;
+
         function simulateClick(element) {
             const click = new CustomEvent('click', {
                 bubbles: true,
@@ -84,6 +86,14 @@ describe('ez-navigation-hub', function() {
                 'The event should have been prevented'
             );
         }
+
+        beforeEach(function () {
+            emptyElement = fixture('EmptyElement');
+        });
+
+        it('should handle an empty navigation hub', function () {
+            emptyElement.activeZone = 'whatever';
+        });
 
         describe('highlight zone', function () {
             it('should highlight the selected zone', function () {
@@ -132,6 +142,16 @@ describe('ez-navigation-hub', function() {
     });
 
     describe('match link url', function () {
+        let emptyElement;
+
+        beforeEach(function () {
+            emptyElement = fixture('EmptyElement');
+        });
+
+        it('should handle an empty navigation hub', function () {
+            emptyElement.matchedLinkUrl = 'whatever';
+        });
+
         it('should highlight the selected link', function () {
             element.matchedLinkUrl = 'url1';
             assert.isOk(element.querySelector('[href="url1"]').parentNode.classList.contains(element.matchedLinkClass), 'link1 should be highlighted');
