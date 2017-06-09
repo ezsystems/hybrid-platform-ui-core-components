@@ -8,6 +8,24 @@ Provides the following custom elements used in the Hybrid Platform UI:
 * `<ez-navigation-hub>`
 * `<ez-toolbar>`
 
+In addition, this package provides a class expression mixin to add support for
+tabs based on a specific markup. To use that expression mixin, you can write
+something like:
+
+```html
+<link rel="import" href="path/to/polymer/polymer-element.html">
+<link rel="import" href="path/to/hybrid-platform-ui-core-components/mixins/ez-tabs.html">
+
+<script>
+    class MyComponent extends eZ.TabsMixin(Polymer.Element) {
+        // your code
+    }
+</script>
+```
+
+With that, the tabs markup will be automatically recognized. ez-tabs.html also
+provides the base CSS code so that the tabs visually behave as tabs.
+
 ## Developers tasks
 
 **System requirements:**
