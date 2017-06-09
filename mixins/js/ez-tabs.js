@@ -15,6 +15,11 @@ window.eZ = window.eZ || {};
      *   <div class="ez-tabs-panel" id="tab2">Some other content</div>
      * </div>
      *
+     * Among others standard APIs, this component relies on `Element.closest`.
+     * `Element.closest` is not available in Edge 14. So for this component to
+     * work in this browser, the page should include a polyfill for this
+     * standard API.
+     *
      * @param {Function} superClass
      * @return {Function}
      */
