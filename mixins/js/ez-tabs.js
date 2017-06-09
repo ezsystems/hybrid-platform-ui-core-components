@@ -6,13 +6,15 @@ window.eZ = window.eZ || {};
      * class expects the following HTML markup for tabs to work and to be styled
      * correctly:
      *
-     * <ul class="ez-tabs-list">
-     *   <li class="ez-tabs-label is-tab-selected"><a href="#tab1">Tab 1</a></li>
-     *   <li class="ez-tabs-label"><a href="#tab2">Tab 2</a></li>
-     * </ul>
-     * <div class="ez-tabs-panels">
-     *   <div class="ez-tabs-panel is-tab-selected" id="tab1">Some content</div>
-     *   <div class="ez-tabs-panel" id="tab2">Some other content</div>
+     * <div class="ez-tabs">
+     *   <ul class="ez-tabs-list">
+     *     <li class="ez-tabs-label is-tab-selected"><a href="#tab1">Tab 1</a></li>
+     *     <li class="ez-tabs-label"><a href="#tab2">Tab 2</a></li>
+     *   </ul>
+     *   <div class="ez-tabs-panels">
+     *     <div class="ez-tabs-panel is-tab-selected" id="tab1">Some content</div>
+     *     <div class="ez-tabs-panel" id="tab2">Some other content</div>
+     *   </div>
      * </div>
      *
      * Among others standard APIs, this component relies on `Element.closest`.

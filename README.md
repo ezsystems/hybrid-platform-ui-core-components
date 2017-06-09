@@ -18,13 +18,36 @@ something like:
 
 <script>
     class MyComponent extends eZ.TabsMixin(Polymer.Element) {
+        static get is() {
+            return 'my-component';
+        }
         // your code
     }
+
+    window.customElements.define(MyComponent.is, MyComponent);
 </script>
 ```
 
 With that, the tabs markup will be automatically recognized. ez-tabs.html also
-provides the base CSS code so that the tabs visually behave as tabs.
+provides the base CSS code so that the tabs visually behave as tabs. So with the
+following code:
+
+```html
+<my-component>
+  <div class="ez-tabs">
+     <ul class="ez-tabs-list">
+       <li class="ez-tabs-label is-tab-selected"><a href="#tab1">Tab 1</a></li>
+       <li class="ez-tabs-label"><a href="#tab2">Tab 2</a></li>
+     </ul>
+     <div class="ez-tabs-panels">
+       <div class="ez-tabs-panel is-tab-selected" id="tab1">Some content</div>
+       <div class="ez-tabs-panel" id="tab2">Some other content</div>
+     </div>
+  </div>
+</my-component>
+```
+
+You should see 2 tabs and should be able to switch from one to the other.
 
 ## Developers tasks
 
