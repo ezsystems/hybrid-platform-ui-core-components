@@ -166,6 +166,7 @@
                 }),
                 redirect: 'follow',
             };
+            let response;
             let url = update;
 
             if ( update instanceof HTMLFormElement ) {
@@ -183,9 +184,12 @@
 
             fetch(url, fetchOptions)
                 .then(this._checkRedirection.bind(this, url))
-                .then((response) => response.json())
+                .then((resp) => {
+                    response = resp;
+                    return resp.json();
+                })
                 .then(this._updateApp.bind(this))
-                .then(this._endUpdate.bind(this, (fetchOptions.method === 'post')))
+                .then((struct) => this._endUpdate((fetchOptions.method === 'post'), response, struct))
                 .catch((error) => {
                     this.updating = false;
 
@@ -204,10 +208,11 @@
          * to signal the very end of the update process.
          *
          * @param {Boolean} isPost
+         * @param {Response} response
          * @param {Object} struct
          * @return {Object}
          */
-        _endUpdate(isPost, struct) {
+        _endUpdate(isPost, response, struct) {
             if ( isPost ) {
                 this._replaceHistory();
             } else if ( !this._fromHistory ) {
@@ -216,7 +221,7 @@
             delete this._fromHistory;
 
             this.updating = false;
-            this._fireUpdated();
+            this._fireUpdated(response);
 
             return struct;
         }
@@ -239,8 +244,10 @@
 
         /**
          * Fires the `ez:app:updated` event.
+         *
+         * @param {Response} response
          */
-        _fireUpdated() {
+        _fireUpdated(response) {
             /**
              * Fired when the app has been updated.
              *
@@ -248,6 +255,9 @@
              */
             const updated = new CustomEvent('ez:app:updated', {
                 bubbles: true,
+                detail: {
+                    response: response,
+                },
             });
 
             this.dispatchEvent(updated);
@@ -279,9 +289,12 @@
          * Updates the app from the given `updateStruct` structure.
          *
          * @param {Object} updateStruct
+         * @return {Object}
          */
         _updateApp(updateStruct) {
             updateElement.call(null, this, updateStruct.update);
+
+            return updateStruct;
         }
 
         /**

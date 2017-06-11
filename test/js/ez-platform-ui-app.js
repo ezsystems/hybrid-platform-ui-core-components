@@ -527,6 +527,24 @@ describe('ez-platform-ui-app', function() {
             document.documentElement.addEventListener('ez:app:updated', assertOnce);
             element.url = urlEmptyUpdate;
         });
+
+        it('should contain the update response`', function (done) {
+            const assertOnce = function (e) {
+                document.documentElement.removeEventListener('ez:app:updated', assertOnce);
+                assert.instanceOf(
+                    e.detail.response,
+                    Response
+                );
+                assert.isTrue(
+                    e.detail.response.url.endsWith(urlEmptyUpdate),
+                    'The response URL should be the one used by the update'
+                );
+                done();
+            };
+
+            document.documentElement.addEventListener('ez:app:updated', assertOnce);
+            element.url = urlEmptyUpdate;
+        });
     });
 
     describe('history', function () {
