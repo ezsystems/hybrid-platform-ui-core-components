@@ -183,6 +183,7 @@
 
             fetch(url, fetchOptions)
                 .then(this._checkRedirection.bind(this, url))
+                .then(this._updateSfToolbar.bind(this))
                 .then((response) => response.json())
                 .then(this._updateApp.bind(this))
                 .then(this._endUpdate.bind(this, (fetchOptions.method === 'post')))
@@ -282,6 +283,21 @@
          */
         _updateApp(updateStruct) {
             updateElement.call(null, this, updateStruct.update);
+        }
+
+        /**
+         * @param {Response} response
+         *
+         * @return {Response}
+         */
+        _updateSfToolbar(response) {
+            var sfToolbar = this.parentNode.querySelector('.sf-toolbar');
+            if (typeof Sfjs !== 'undefined' && sfToolbar) {
+                var debugToken = response.headers.get('x-debug-token');
+                debugToken && Sfjs.load(sfToolbar.id, '/_wdt/' + debugToken);
+            }
+
+            return response;
         }
 
         /**
