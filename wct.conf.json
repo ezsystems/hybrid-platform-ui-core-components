@@ -1,5 +1,5 @@
 {
-    "suites": ["test/*.html"],
+    "suites": ["test/*.html", "test/mixins/*.html"],
     "plugins": {
         "sauce": {
             "browsers": [{
