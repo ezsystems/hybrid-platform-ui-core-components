@@ -119,6 +119,37 @@
         constructor() {
             super();
             this._enhanceNavigation();
+            this._handleContentDiscover();
+        }
+
+        /**
+         * Adds event listener for `ez:contentDiscover` event.
+         */
+        _handleContentDiscover() {
+            this.addEventListener('ez:contentDiscover', this._createUDCustomElement.bind(this));
+        }
+
+        /**
+         * Creates ez-universal-discovery custom element and sets properties and handlers
+         *
+         * @param {Object} e
+         */
+        _createUDCustomElement(e) {
+            const {config, handlers} = e.detail;
+            const udw = document.createElement('ez-universal-discovery');
+            const removeUdw = function () {
+                udw.parentNode.removeChild(udw);
+            };
+
+            Object.keys(config).forEach(function (prop) {
+                udw[prop] = config[prop];
+            });
+            Object.keys(handlers).forEach(function (event) {
+                udw.addEventListener(event, handlers[event]);
+            });
+            udw.addEventListener('ez:confirm', removeUdw);
+            udw.addEventListener('ez:cancel', removeUdw);
+            this.appendChild(udw);
         }
 
         /**
