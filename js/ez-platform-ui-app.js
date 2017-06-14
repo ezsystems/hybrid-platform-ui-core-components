@@ -166,6 +166,7 @@
                 }),
                 redirect: 'follow',
             };
+            let response;
             let url = update;
 
             if ( update instanceof HTMLFormElement ) {
@@ -183,8 +184,12 @@
 
             fetch(url, fetchOptions)
                 .then(this._checkRedirection.bind(this, url))
+                .then((resp) => {
+                    response = resp;
+                    return resp.json();
+                })
                 .then(this._updateApp.bind(this))
-                .then(this._endUpdate.bind(this, (fetchOptions.method === 'post')))
+                .then(this._endUpdate.bind(this, (fetchOptions.method === 'post'), response))
                 .catch((error) => {
                     this.updating = false;
 
@@ -204,10 +209,10 @@
          *
          * @param {Boolean} isPost
          * @param {Response} response
-         * @param {Object} struct
+         * @param {Object} updateStruct
          * @return {Object}
          */
-        _endUpdate(isPost, response) {
+        _endUpdate(isPost, response, updateStruct) {
             if ( isPost ) {
                 this._replaceHistory();
             } else if ( !this._fromHistory ) {
@@ -218,7 +223,7 @@
             this.updating = false;
             this._fireUpdated(response);
 
-            return response;
+            return updateStruct;
         }
 
         /**
@@ -250,7 +255,9 @@
              */
             const updated = new CustomEvent('ez:app:updated', {
                 bubbles: true,
-                'response': response
+                detail: {
+                    response: response
+                }
             });
 
             this.dispatchEvent(updated);
@@ -281,29 +288,12 @@
         /**
          * Updates the app from the given `updateStruct` structure.
          *
-         * @param {Response} response
+         * @param {Object} updateStruct
          */
-        _updateApp(response) {
-            const updateStruct = response.json();
-
+        _updateApp(updateStruct) {
             updateElement.call(null, this, updateStruct.update);
 
-            return response;
-        }
-
-        /**
-         * @param {Response} response
-         *
-         * @return {Response}
-         */
-        _updateSfToolbar(response) {
-            var sfToolbar = this.parentNode.querySelector('.sf-toolbar');
-            if (typeof Sfjs !== 'undefined' && sfToolbar) {
-                var debugToken = response.headers.get('x-debug-token');
-                debugToken && Sfjs.load(sfToolbar.id, '/_wdt/' + debugToken);
-            }
-
-            return response;
+            return updateStruct;
         }
 
         /**
