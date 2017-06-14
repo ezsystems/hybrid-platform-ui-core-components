@@ -1,11 +1,7 @@
 (function () {
     function updateElement(element, updateStruct) {
         if ( typeof updateStruct === 'string' ) {
-            // this replaces element.outerHTML = updateStruct;
-            // because of https://github.com/webcomponents/custom-elements/issues/71
-            const doc = (new DOMParser()).parseFromString(updateStruct, 'text/html');
-
-            element = element.parentNode.replaceChild(doc.body.firstChild, element);
+            element.innerHTML = updateStruct;
         } else if ( updateStruct ) {
             const properties = updateStruct.properties || {};
             const attributes = updateStruct.attributes || {};
