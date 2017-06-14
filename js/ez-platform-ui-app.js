@@ -183,8 +183,6 @@
 
             fetch(url, fetchOptions)
                 .then(this._checkRedirection.bind(this, url))
-                .then(this._updateSfToolbar.bind(this))
-                .then((response) => response.json())
                 .then(this._updateApp.bind(this))
                 .then(this._endUpdate.bind(this, (fetchOptions.method === 'post')))
                 .catch((error) => {
@@ -205,10 +203,11 @@
          * to signal the very end of the update process.
          *
          * @param {Boolean} isPost
+         * @param {Response} response
          * @param {Object} struct
          * @return {Object}
          */
-        _endUpdate(isPost, struct) {
+        _endUpdate(isPost, response) {
             if ( isPost ) {
                 this._replaceHistory();
             } else if ( !this._fromHistory ) {
@@ -217,9 +216,9 @@
             delete this._fromHistory;
 
             this.updating = false;
-            this._fireUpdated();
+            this._fireUpdated(response);
 
-            return struct;
+            return response;
         }
 
         /**
@@ -240,8 +239,10 @@
 
         /**
          * Fires the `ez:app:updated` event.
+         *
+         * @param {Response} response
          */
-        _fireUpdated() {
+        _fireUpdated(response) {
             /**
              * Fired when the app has been updated.
              *
@@ -249,6 +250,7 @@
              */
             const updated = new CustomEvent('ez:app:updated', {
                 bubbles: true,
+                'response': response
             });
 
             this.dispatchEvent(updated);
@@ -279,10 +281,14 @@
         /**
          * Updates the app from the given `updateStruct` structure.
          *
-         * @param {Object} updateStruct
+         * @param {Response} response
          */
-        _updateApp(updateStruct) {
+        _updateApp(response) {
+            const updateStruct = response.json();
+
             updateElement.call(null, this, updateStruct.update);
+
+            return response;
         }
 
         /**
