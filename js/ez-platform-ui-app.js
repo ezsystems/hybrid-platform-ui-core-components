@@ -143,11 +143,12 @@
                 return;
             }
             if ( this.updating ) {
-                // update of the URL after a redirect, so we don't retrigger
-                // an AJAX request since we are in the middle of a request
+                // update of the URL after a redirect or because the response is
+                // an error so we don't retrigger an AJAX request since we are
+                // in the middle of a request
                 return;
             }
-            this._update(updateUrl);
+            this._update(updateUrl, oldUrl);
         }
 
 
@@ -157,8 +158,9 @@
          *
          * @param {String|HTMLFormElement} update either an URL to fetch or an
          * HTMLFormElement (POST) to submit
+         * @param {String} oldUrl the previous URL value
          */
-        _update(update) {
+        _update(update, oldUrl) {
             const fetchOptions = {
                 credentials: 'same-origin',
                 headers: new Headers({
@@ -189,7 +191,7 @@
                     return resp.json();
                 })
                 .then(this._updateApp.bind(this))
-                .then((struct) => this._endUpdate((fetchOptions.method === 'post'), response, struct))
+                .then((struct) => this._endUpdate(oldUrl, (fetchOptions.method === 'post'), response, struct))
                 .catch((error) => {
                     this.updating = false;
 
@@ -207,16 +209,21 @@
          * updated, it also sets `updating` to false and fire the updated event
          * to signal the very end of the update process.
          *
+         * @param {Response} oldUrl
          * @param {Boolean} isPost
          * @param {Response} response
          * @param {Object} struct
          * @return {Object}
          */
-        _endUpdate(isPost, response, struct) {
-            if ( isPost ) {
-                this._replaceHistory();
-            } else if ( !this._fromHistory ) {
-                this._pushHistory();
+        _endUpdate(oldUrl, isPost, response, struct) {
+            if ( response.status > 400 ) {
+                this.url = oldUrl;
+            } else {
+                if ( isPost ) {
+                    this._replaceHistory();
+                } else if ( !this._fromHistory ) {
+                    this._pushHistory();
+                }
             }
             delete this._fromHistory;
 
