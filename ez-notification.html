@@ -1,0 +1,23 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="ez-notification">
+    <template>
+        <style>
+            :host {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            :host .ez-notification-close {
+                color: inherit;
+                background: transparent;
+                border: 0;
+                padding: 0 0.5em;
+                font-weight: bold;
+            }
+        </style>
+        <div class="ez-notification-content"><slot></slot></div>
+        <button class="ez-notification-close" on-click="remove" type="button">🞪</button>
+    </template>
+    <script src="js/ez-notification.js"></script>
+</dom-module>
