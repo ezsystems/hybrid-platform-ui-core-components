@@ -42,6 +42,8 @@
 
                                 notification.timeout = parseInt(this.getAttribute('data-timeout'), 10);
                                 notification.type = this.getAttribute('data-type');
+                                notification.copyable = this.hasAttribute('data-copyable');
+                                notification.details = this.getAttribute('data-details');
 
                                 notification.innerHTML = '<p>Hey I\'m a notification</p>';
                                 bar.appendChild(notification);
@@ -54,6 +56,9 @@
                     </button>
                     <button class="add-notification" data-type="error" data-timeout="0">
                         Add an error notification (timeout 0)
+                    </button>
+                    <button class="add-notification" data-type="error" data-timeout="0" data-copyable data-details="Some details">
+                        Add a copyable error notification (timeout 0)
                     </button>
                     <div id="notification-bar"></div>
                 </template>

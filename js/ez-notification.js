@@ -4,6 +4,9 @@
      * timeout is provided, the notification automatically disappears after
      * timeout seconds otherwise, the user has to use the close button.
      *
+     * Also, this element accepts a `details` property that can be copied when
+     * `copyable` property is set to true.
+     *
      * Example:
      *
      * ```
@@ -45,6 +48,23 @@
                     value: 0,
                     observer: '_setTimeout',
                 },
+
+                /**
+                 * Indicates whether `details` can be copied using a copy button
+                 * integrated in the notification.
+                 */
+                copyable: {
+                    type: Boolean,
+                    value: false,
+                },
+
+                /**
+                 * Holds details about the notification. If `copyable` is true,
+                 * this can be copied to the clipboard.
+                 */
+                details: {
+                    type: String,
+                },
             };
         }
 
@@ -68,6 +88,21 @@
             if ( this._timeoutID ) {
                 clearTimeout(this._timeoutID);
             }
+        }
+
+        /**
+         * Copies `details` property value to the clipboard.
+         * It's a click event listener on the copy button.
+         */
+        _copyDetails() {
+            const details = this.shadowRoot.querySelector('.details');
+
+            // `copying` make sure the corresponding `textarea` can receive the
+            // focus so that we can select its content and copy it.
+            details.classList.add('copying');
+            details.select();
+            document.execCommand('copy');
+            details.classList.remove('copying');
         }
 
         disconnectedCallback() {
