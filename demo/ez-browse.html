@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>ez-browse demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../ez-browse.html">
+
+  </head>
+    <body>
+        <div class="vertical-section-container centered">
+            <h3>Basic ez-browser demo</h3>
+            <demo-snippet>
+              <template>
+                  <ez-browse selected-location-id="2">
+                      Browse
+                  </ez-browse>
+                  <div id="log"></div>
+                  <script>
+                        document.addEventListener('ez:contentDiscover', (e) => {
+                            const browse = document.querySelector('ez-browse');
+                            const log = document.getElementById('log');
+
+                            log.innerHTML += `<p> Selected location id is: "${e.detail.config.startingLocationId}", Title is: "${e.detail.config.title}", Confirm label is: "${e.detail.config.confirmLabel}" </p>`;
+                        });
+                  </script>
+              </template>
+            </demo-snippet>
+        </div>
+    </body>
+</html>
