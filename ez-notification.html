@@ -11,14 +11,26 @@
 
             .tools {
                 display: flex;
+                justify-content: flex-end;
+                align-items: center;
             }
 
             button {
+                flex: 0;
                 color: inherit;
                 background: transparent;
                 border: 0;
-                padding: 0 0.5em;
+                line-height: inherit;
+                padding: 0.3em 0.5em;
                 font-weight: bold;
+                cursor: pointer;
+            }
+
+            .copy {
+                flex: 1;
+                border: 2px solid var(--ez-notification-copy-border-color, #fff);
+                border-radius: 4px;
+                font-size: var(--ez-notification-copy-font-size, 1em);
             }
 
             .details {

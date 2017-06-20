@@ -5,7 +5,13 @@
      * timeout seconds otherwise, the user has to use the close button.
      *
      * Also, this element accepts a `details` property that can be copied when
-     * `copyable` property is set to true.
+     * `copyable` property is set to true with a "Copy to clipboard" button.
+     * The copy to clipboard button can be styled with 2 custom properties:
+     *
+     * - `--ez-notification-copy-border-color` to set the button border color
+     *   (white by default)
+     * - `--ez-notification-copy-font-size` to set the button font size color
+     *   (1em by default)
      *
      * Example:
      *

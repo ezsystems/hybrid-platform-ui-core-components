@@ -19,7 +19,15 @@
 
             ez-notification[type="success"] {
                 background: palegreen;
-            };
+            }
+
+            ez-notification[type="custom"] {
+                padding: 1em;
+                background: royalblue;
+                --ez-notification-copy-font-size: 0.7em;
+                --ez-notification-copy-border-color: #000;
+                color: #000;
+            }
 
             #notification-bar {
                 margin-top: 1em;
@@ -60,7 +68,9 @@
                     <button class="add-notification" data-type="error" data-timeout="0" data-copyable data-details="Some details">
                         Add a copyable error notification (timeout 0)
                     </button>
-                    <div id="notification-bar"></div>
+                    <div id="notification-bar">
+                        <ez-notification type="custom" timeout="0" copyable><p>I'm a custom notification to test CSS style<br>Copy button border color is set to #000 and font-size set to 0.7em</p></ez-notification>
+                    </div>
                 </template>
             </demo-snippet>
         </div>
