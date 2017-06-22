@@ -229,6 +229,80 @@ describe('ez-platform-ui-app', function() {
         });
     });
 
+    describe('handle `ez:contentDiscover`', function () {
+        const property = 'anything';
+        let eventFired = false;
+
+        function fireContentDiscover () {
+            element.dispatchEvent(new CustomEvent('ez:contentDiscover', {
+                detail: {
+                    config: {
+                        anyProp: property,
+                    },
+                    handlers: {
+                        anyEventName: () => {
+                            eventFired = true;
+                        },
+                    },
+                },
+            }));
+        }
+
+        afterEach(function () {
+            const udw = document.querySelector('ez-universal-discovery');
+
+            if (udw) {
+                udw.parentNode.removeChild(udw);
+            }
+        });
+
+        beforeEach(function () {
+            fireContentDiscover();
+        });
+
+        it('should create <ez-universal-discovery>', function () {
+            const udw = document.querySelector('ez-universal-discovery');
+
+            assert.ok(
+                udw,
+                '<ez-universal-discovery> should be created'
+            );
+        });
+
+        it('should set the properties to the universal discovery widget', function () {
+            const udw = document.querySelector('ez-universal-discovery');
+
+            assert.equal(
+                udw.anyProp,
+                property,
+                'universal discovery component should get the properties given in the event'
+            );
+        });
+
+        it('should register the provided handlers as universal discovery widget listeners', function () {
+            const udw = document.querySelector('ez-universal-discovery');
+
+            udw.dispatchEvent(new CustomEvent('anyEventName', {}));
+            assert.isTrue(eventFired, 'event should have been fired');
+        });
+
+        it('should remove <ez-universal-discovery> on `ez:confirm` ', function () {
+            document.querySelector('ez-universal-discovery').dispatchEvent(new CustomEvent('ez:confirm', {}));
+            assert.notOk(
+                document.querySelector('ez-universal-discovery'),
+                '<ez-universal-discovery> should be removed'
+            );
+        });
+
+        it('should remove <ez-universal-discovery> on `ez:cancel` ', function () {
+            document.querySelector('ez-universal-discovery').dispatchEvent(new CustomEvent('ez:cancel', {}));
+            assert.notOk(
+                document.querySelector('ez-universal-discovery'),
+                '<ez-universal-discovery> should be removed'
+            );
+        });
+    });
+
     describe('enhance navigation', function () {
         function simulateClick(element) {
             const click = new CustomEvent('click', {
