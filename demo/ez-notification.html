@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-notification demo</title>
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+        <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+        <link rel="import" href="../ez-notification.html">
+
+        <style>
+            ez-notification[type="error"] {
+                background: firebrick;
+                color: #fff;
+            }
+
+            ez-notification[type="success"] {
+                background: palegreen;
+            }
+
+            ez-notification[type="custom"] {
+                padding: 1em;
+                background: royalblue;
+                --ez-notification-copy-font-size: 0.7em;
+                --ez-notification-copy-border-color: #000;
+                color: #000;
+            }
+
+            #notification-bar {
+                margin-top: 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="vertical-section-container centered">
+            <h3>Basic ez-toolbar demo</h3>
+            <demo-snippet>
+                <template>
+                    <script>
+                    (function () {
+                        const buttons = document.querySelectorAll('.add-notification');
+
+                        Array.prototype.forEach.call(buttons, function (button) {
+                            button.addEventListener('click', function () {
+                                const bar = document.getElementById('notification-bar');
+                                const notification = document.createElement('ez-notification');
+
+                                notification.timeout = parseInt(this.getAttribute('data-timeout'), 10);
+                                notification.type = this.getAttribute('data-type');
+                                notification.copyable = this.hasAttribute('data-copyable');
+                                notification.details = this.getAttribute('data-details');
+
+                                notification.innerHTML = '<p>Hey I\'m a notification</p>';
+                                bar.appendChild(notification);
+                            });
+                        });
+                    })();
+                    </script>
+                    <button class="add-notification" data-type="success" data-timeout="5">
+                        Add a successful notification (timeout 5)
+                    </button>
+                    <button class="add-notification" data-type="error" data-timeout="0">
+                        Add an error notification (timeout 0)
+                    </button>
+                    <button class="add-notification" data-type="error" data-timeout="0" data-copyable data-details="Some details">
+                        Add a copyable error notification (timeout 0)
+                    </button>
+                    <div id="notification-bar">
+                        <ez-notification type="custom" timeout="0" copyable><p>I'm a custom notification to test CSS style<br>Copy button border color is set to #000 and font-size set to 0.7em</p></ez-notification>
+                    </div>
+                </template>
+            </demo-snippet>
+        </div>
+    </body>
+</html>

@@ -113,6 +113,28 @@
                     value: location.href,
                     observer: '_triggerUpdate',
                 },
+
+                /**
+                 * Array of notifications to display to the user. A notification
+                 * is described by an object with the following properties:
+                 *
+                 * - `type` a String representing the type of the notification
+                 *   (`error`, `processing`, `positive`, ...)
+                 * - `timeout` a Number of seconds after which the notification
+                 *   will disappear. 0 means the notification will not disappear
+                 *   by itself
+                 * - `content` a String containing the HTML to display to the
+                 *   user.
+                 * - [optional] `details` a String containing details about the
+                 *   notification
+                 * - [optional] `copyable` a Boolean, if true the user will see
+                 *   a button a copy button to copy the notification details to
+                 *   its clipboard.
+                 */
+                notifications: {
+                    type: Array,
+                    observer: '_renderNotifications',
+                },
             };
         }
 
@@ -128,6 +150,30 @@
          */
         _setPageTitle(newValue) {
             this.ownerDocument.title = newValue;
+        }
+
+        /**
+         * Renders the given `notifications` in the app. It's an observer of the
+         * `notifications` property.
+         *
+         * @param {Array} notifications
+         */
+        _renderNotifications(notifications) {
+            const bar = this.querySelector('#ez-notification-bar');
+
+            if ( !notifications ) {
+                return;
+            }
+            notifications.forEach((info) => {
+                const notification = this.ownerDocument.createElement('ez-notification');
+
+                notification.type = info.type;
+                notification.timeout = parseInt(info.timeout, 10);
+                notification.details = info.details;
+                notification.copyable = !!info.copyable;
+                notification.innerHTML = info.content;
+                bar.appendChild(notification);
+            });
         }
 
         /**

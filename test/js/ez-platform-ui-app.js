@@ -148,6 +148,85 @@ describe('ez-platform-ui-app', function() {
                 });
             });
         });
+
+        describe('`notifications`', function () {
+            let notifElement;
+
+            beforeEach(function () {
+                notifElement = fixture('NotificationsTestFixture');
+            });
+
+            function assertNotification(object, element) {
+                Object.keys(object).forEach(function (prop) {
+                    if ( prop === 'content' ) {
+                        assert.strictEqual(
+                            object[prop], element.innerHTML,
+                            'The ez-notification content should have been set from the notification object'
+                        );
+                    } else {
+                        assert.strictEqual(
+                            object[prop], element[prop],
+                            `The ez-notification property '${prop}' should have been set from the object`
+                        );
+                    }
+                });
+            }
+
+            it('should ignore falsy value', function () {
+                element.notifications = '';
+            });
+
+            it('should render notifications', function () {
+                const notification1 = {
+                    type: 'error',
+                    timeout: 0,
+                    content: 'whatever',
+                    copyable: true,
+                    details: 'whatever2',
+                };
+                const notification2 = {
+                    type: 'success',
+                    timeout: 10,
+                    content: '2',
+                    copyable: false,
+                    details: 'details 2',
+                };
+
+                notifElement.notifications = [notification1, notification2];
+
+                const elements = notifElement.querySelectorAll('ez-notification');
+
+                assert.equal(
+                    notifElement.notifications.length, elements.length,
+                    `${notifElement.notifications.length} notifications should have been created`
+                );
+                assertNotification(notification1, elements[0]);
+                assertNotification(notification2, elements[1]);
+            });
+
+            it('should convert notification `timeout` to a number', function () {
+                const notification = {
+                    type: 'error',
+                    timeout: '0',
+                    content: 'whatever',
+                };
+
+                notifElement.notifications = [notification];
+                assert.strictEqual(0, notifElement.querySelector('ez-notification').timeout);
+            });
+
+            it('should convert notification `copyable` to a boolean', function () {
+                const notification = {
+                    type: 'error',
+                    timeout: '0',
+                    content: 'whatever',
+                    copyable: 'true',
+                };
+
+                notifElement.notifications = [notification];
+                assert.isTrue(notifElement.querySelector('ez-notification').copyable);
+            });
+        });
     });
 
     describe('enhance navigation', function () {

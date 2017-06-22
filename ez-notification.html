@@ -1,0 +1,59 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/elements/dom-if.html">
+
+<dom-module id="ez-notification">
+    <template>
+        <style>
+            :host {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .tools {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+            }
+
+            button {
+                flex: 0;
+                color: inherit;
+                background: transparent;
+                border: 0;
+                line-height: inherit;
+                padding: 0.3em 0.5em;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .copy {
+                flex: 1;
+                border: 2px solid var(--ez-notification-copy-border-color, #fff);
+                border-radius: 4px;
+                font-size: var(--ez-notification-copy-font-size, 1em);
+            }
+
+            .details {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 1em;
+                height: 1em;
+                display: none;
+            }
+
+            .details.copying {
+                display: block;
+            }
+        </style>
+        <div class="content"><slot></slot></div>
+        <div class="tools">
+            <template is="dom-if" if="[[copyable]]">
+                <textarea class="details">[[details]]</textarea>
+                <button class="copy" on-click="_copyDetails" type="button">Copy message</button><!-- TODO should be translatable -->
+            </template>
+            <button class="close" on-click="remove" type="button">🞪</button>
+        </div>
+    </template>
+    <script src="js/ez-notification.js"></script>
+</dom-module>

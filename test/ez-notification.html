@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-notification test</title>
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../web-component-tester/browser.js"></script>
+
+        <link rel="import" href="../ez-notification.html">
+    </head>
+    <body>
+
+        <test-fixture id="BasicTestFixture">
+            <template>
+                <ez-notification></ez-notification>
+            </template>
+        </test-fixture>
+
+        <test-fixture id="WithContentTestFixture">
+            <template>
+                <ez-notification>
+                    <p class="notification-content">I'm the notification content</p>
+                </ez-notification>
+            </template>
+        </test-fixture>
+
+        <test-fixture id="CopyableElement">
+            <template>
+                <ez-notification details="some details" copyable></ez-notification>
+            </template>
+        </test-fixture>
+
+        <script src="js/ez-notification.js"></script>
+    </body>
+</html>
