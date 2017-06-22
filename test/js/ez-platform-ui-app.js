@@ -509,6 +509,21 @@ describe('ez-platform-ui-app', function() {
                     attributeFilter: ['updating'],
                 });
             });
+
+            describe('server error', function () {
+                it('should prevent browser URI update', function () {
+                    const doNotExist = '/i/do/not/exist';
+
+                    element.addEventListener('ez:app:updated', function () {
+                        assert.notEqual(
+                            element.url,
+                            doNotExist,
+                            'The URI should remain the same after an error'
+                        );
+                    });
+                    element.url = '/i/do/not/exist';
+                });
+            });
         });
     });
 
