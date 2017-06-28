@@ -142,6 +142,7 @@
             super();
             this._enhanceNavigation();
             this._handleContentDiscover();
+            this._handleNavigateTo();
         }
 
         /**
@@ -152,12 +153,21 @@
         }
 
         /**
-         * Creates ez-universal-discovery custom element and sets properties and handlers
+         * Adds an event listener for the ez:navigateTo event to navigate to the url provided by the event details
+         */
+        _handleNavigateTo() {
+            this.addEventListener('ez:navigateTo', (e) => {
+                this.url = e.detail.url;
+            });
+        }
+
+        /**
+         * Creates ez-universal-discovery custom element and sets properties and listeners
          *
          * @param {Object} e
          */
         _createUDCustomElement(e) {
-            const {config, handlers} = e.detail;
+            const {config, listeners} = e.detail;
             const udw = document.createElement('ez-universal-discovery');
             const removeUdw = function () {
                 udw.parentNode.removeChild(udw);
@@ -166,8 +176,8 @@
             Object.keys(config).forEach(function (prop) {
                 udw[prop] = config[prop];
             });
-            Object.keys(handlers).forEach(function (event) {
-                udw.addEventListener(event, handlers[event]);
+            Object.keys(listeners).forEach(function (event) {
+                udw.addEventListener(event, listeners[event]);
             });
             udw.addEventListener('ez:confirm', removeUdw);
             udw.addEventListener('ez:cancel', removeUdw);

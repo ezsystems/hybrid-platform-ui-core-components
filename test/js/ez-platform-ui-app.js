@@ -239,7 +239,7 @@ describe('ez-platform-ui-app', function() {
                     config: {
                         anyProp: property,
                     },
-                    handlers: {
+                    listeners: {
                         anyEventName: () => {
                             eventFired = true;
                         },
@@ -299,6 +299,23 @@ describe('ez-platform-ui-app', function() {
             assert.notOk(
                 document.querySelector('ez-universal-discovery'),
                 '<ez-universal-discovery> should be removed'
+            );
+        });
+    });
+
+    describe('handle `ez:navigateTo`', function () {
+        it('should update the `url` property', function () {
+            const url = 'u/r/l';
+
+            element.dispatchEvent(new CustomEvent('ez:navigateTo', {
+                detail: {
+                    url: url,
+                },
+            }));
+
+            assert.equal(
+                element.url,
+                url
             );
         });
     });
