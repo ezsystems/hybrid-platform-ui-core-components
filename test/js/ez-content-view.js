@@ -1,4 +1,4 @@
-describe('ez-server-side-content', function() {
+describe('ez-content-view', function() {
     let element;
 
     beforeEach(function () {
@@ -6,9 +6,9 @@ describe('ez-server-side-content', function() {
     });
 
     it('should be defined', function () {
-        assert.instanceOf(
-            element,
-            window.customElements.get('ez-server-side-content')
+        assert.equal(
+            window.customElements.get('ez-content-view'),
+            element.constructor
         );
     });
 });
