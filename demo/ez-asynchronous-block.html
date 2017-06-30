@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-asynchronous-block demo</title>
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+        <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+        <link rel="import" href="../ez-asynchronous-block.html">
+
+        <style>
+            ez-asynchronous-block[loading] {
+                opacity: 0.3;
+            }
+
+            ez-asynchronous-block {
+                opacity: 1;
+                transition: opacity 0.3s ease;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="vertical-section-container centered">
+            <h3>ez-asynchronous-block demo</h3>
+            <demo-snippet>
+                <template>
+                    <ez-asynchronous-block url="asynchronous-load.html">Waiting to start loading</ez-asynchronous-block>
+                    <button class="load">Load the asynchronous block</button>
+                    <button class="error">Trigger error</button>
+                    <h2>Event log</h2>
+                    <div id="log"></div>
+                    <script>
+                        const button = document.querySelector('.load');
+                        const err = document.querySelector('.error');
+                        const asyncBlock = document.querySelector('ez-asynchronous-block');
+                        const log = document.getElementById('log');
+
+                        button.addEventListener('click', function () {
+                            asyncBlock.url = asyncBlock.getAttribute('url');
+                            asyncBlock.load();
+                        });
+                        err.addEventListener('click', function () {
+                            asyncBlock.url = 'http://itdoesnotexist.test/';
+                            asyncBlock.load();
+                        });
+                        asyncBlock.addEventListener('ez:asynchronousBlock:updated', function () {
+                            log.innerHTML += '<p><code>ez:asynchronousBlock:updated</code> event</p>';
+                        });
+                        asyncBlock.addEventListener('ez:asynchronousBlock:error', function (e) {
+                            log.innerHTML += `<p><code>ez:asynchronousBlock:error</code> event (${e.detail.error})</p>`;
+                        });
+                    </script>
+                </template>
+            </demo-snippet>
+        </div>
+    </body>
+</html>
