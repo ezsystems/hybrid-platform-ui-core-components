@@ -77,14 +77,15 @@ describe('ez-asynchronous-block', function() {
             element.load();
         });
 
-        it('should handle errors', function (done) {
-            element.addEventListener('ez:asynchronousBlock:error', function (e) {
+        describe('network error handling', function () {
+            function assertError(error, element) {
                 // this should test instanceof Error instead
                 // but in Edge with the fetch polyfill it's not an Error object!?
                 assert.isDefined(
-                    e.detail.error,
+                    error,
                     'The error should be provided in the event'
                 );
+
                 assert.isFalse(
                     element.loading,
                     '`loading` should be set to false'
@@ -93,10 +94,25 @@ describe('ez-asynchronous-block', function() {
                     element.loaded,
                     '`loaded` should be set to false'
                 );
-                done();
+            }
+
+            it('should handle connection errors', function (done) {
+                element.addEventListener('ez:asynchronousBlock:error', function (e) {
+                    assertError(e.detail.error, element);
+                    done();
+                });
+                element.url = 'http://ihopeitwillneverexists.test';
+                element.load();
             });
-            element.url = 'http://ihopeitwillneverexists.test';
-            element.load();
+
+            it('should handle 40X errors', function (done) {
+                element.addEventListener('ez:asynchronousBlock:error', function (e) {
+                    assertError(e.detail.error, element);
+                    done();
+                });
+                element.url = 'test/does/not/exist';
+                element.load();
+            });
         });
 
         function testBubble(element, eventName, done) {

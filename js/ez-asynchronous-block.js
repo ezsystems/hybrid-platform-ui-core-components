@@ -73,6 +73,12 @@
 
             this.loading = true;
             fetch(this.url, fetchOptions)
+                .then((response) => {
+                    if ( response.status >= 400 ) {
+                        throw new Error();
+                    }
+                    return response;
+                })
                 .then((response) => response.text())
                 .then((htmlCode) => {
                     this.loading = false;
