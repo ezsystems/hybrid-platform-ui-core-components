@@ -1,6 +1,8 @@
 window.eZ = window.eZ || {};
 
 (function (ns) {
+    ns.mixins = ns.mixins || {};
+
     /**
      * Mixins tabs support into a class extending `superClass`. The resulting
      * class expects the following HTML markup for tabs to work and to be styled
@@ -44,7 +46,7 @@ window.eZ = window.eZ || {};
      * @param {Function} superClass
      * @return {Function}
      */
-    ns.TabsMixin = function (superClass) {
+    ns.mixins.Tabs = function (superClass) {
         const TAB_IS_SELECTED = 'is-tab-selected';
 
         return class extends superClass {

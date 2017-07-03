@@ -14,7 +14,7 @@
         <link rel="import" href="../../mixins/ez-tabs.html">
         <script>
         window.addEventListener('WebComponentsReady', function () {
-            class TestElement extends eZ.TabsMixin(Polymer.Element) {
+            class TestElement extends eZ.mixins.Tabs(Polymer.Element) {
                 static get is() {
                     return 'ez-test-tabs';
                 }

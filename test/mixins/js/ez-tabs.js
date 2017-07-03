@@ -5,8 +5,8 @@ describe('ez-tabs', function () {
         element = fixture('BasicTestFixture');
     });
 
-    it('should define the eZ.TabsMixin', function () {
-        assert.isFunction(window.eZ.TabsMixin);
+    it('should define `eZ.mixins.Tabs`', function () {
+        assert.isFunction(window.eZ.mixins.Tabs);
     });
 
     describe('swich tab', function () {
