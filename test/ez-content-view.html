@@ -20,6 +20,7 @@
                     <ul class="ez-tabs-list">
                         <li class="ez-tabs-label is-tab-selected"><a href="#tab1">Tab 1</a></li>
                         <li class="ez-tabs-label"><a href="#tab2" class="tab-link">Tab 2</a></li>
+                        <li class="ez-tabs-label"><a href="#async-tab" class="async-tab-link">Async tab</a></li>
                     </ul>
                     <div class="ez-tabs-panels">
                         <div class="ez-tabs-panel is-tab-selected" id="tab1">
@@ -29,6 +30,7 @@
                         <div class="ez-tabs-panel" id="tab2">
                             Some other content
                         </div>
+                        <ez-asynchronous-block id="async-tab"></ez-asynchronous-block>
                     </div>
                 </ez-content-view>
             </template>
@@ -37,5 +39,6 @@
         <script src="js/ez-content-view.js"></script>
         <script src="js/ez-server-side-content.js"></script>
         <script src="mixins/js/ez-tabs.js"></script>
+        <script src="mixins/js/ez-notifier.js"></script>
     </body>
 </html>

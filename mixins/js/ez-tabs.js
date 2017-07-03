@@ -125,6 +125,16 @@ window.eZ = window.eZ || {};
                     element.classList.remove(TAB_IS_SELECTED);
                 });
             }
+
+            /**
+             * Returns the label link for the given `panel` element.
+             *
+             * @param {HTMLElement} panel
+             * @return {HTMLElement}
+             */
+            _getLabelLink(panel) {
+                return this.querySelector(`[href="#${panel.id}"]`);
+            }
         };
     };
 })(window.eZ);
