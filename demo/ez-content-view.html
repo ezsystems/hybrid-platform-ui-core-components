@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-content-view demo</title>
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+        <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+        <link rel="import" href="../ez-content-view.html">
+    </head>
+    <body>
+        <div class="vertical-section-container centered">
+            <h3>Basic ez-content-view demo</h3>
+            <demo-snippet>
+                <template>
+                    <ez-content-view>
+                        <div class="ez-tabs">
+                            <ul class="ez-tabs-list">
+                                <li class="ez-tabs-label is-tab-selected"><a href="#tab1">Tab 1</a></li>
+                                <li class="ez-tabs-label"><a href="#tab2">Tab 2</a></li>
+                            </ul>
+                            <div class="ez-tabs-panels">
+                                <div class="ez-tabs-panel is-tab-selected" id="tab1">
+                                    <p>This is the content of <em>Tab 1</em></p>
+                                    <p>Click on <em>Tab 2</em> to switch to the other tab</p>
+                                </div>
+                                <div class="ez-tabs-panel" id="tab2">
+                                    <p>This is the content of <em>Tab 2</em></p>
+                                    <p>Click on <em>Tab 1</em> to switch to the other tab</p>
+                                </div>
+                            </div>
+                        </div>
+                    </ez-content-view>
+                </template>
+            </demo-snippet>
+        </div>
+    </body>
+</html>
