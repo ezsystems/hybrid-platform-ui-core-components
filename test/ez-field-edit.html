@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-field-edit test</title>
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../web-component-tester/browser.js"></script>
+
+        <link rel="import" href="../ez-field-edit.html">
+    </head>
+    <body>
+        <test-fixture id="BasicTestFixtureSimple">
+            <template>
+                <ez-field-edit>
+                    <label for="input1">Field label</label>
+                    <input id="input1" type="text" pattern="\d*"/>
+                </ez-field-edit>
+            </template>
+        </test-fixture>
+        <test-fixture id="BasicTestFixtureSimpleLabelDeeper">
+            <template>
+                <ez-field-edit>
+                    <p>
+                        <label for="input2">Field label</label>
+                    </p>
+                    <input id="input2" type="text" pattern="\d*"/>
+                </ez-field-edit>
+            </template>
+        </test-fixture>
+        <test-fixture id="BasicTestFixtureSimpleInputDeeper">
+            <template>
+                <ez-field-edit>
+                    <p>
+                        <input id="input3" type="text" pattern="\d*"/>
+                    </p>
+                    <label for="input3">Field label</label>
+                </ez-field-edit>
+            </template>
+        </test-fixture>
+        <test-fixture id="BasicTestFixtureMultipleLabelDeeper">
+            <template>
+                <ez-field-edit>
+                    <div id="lowestCommonParentLabelDeeper1">
+                        <h2>
+                            <label for="input4">Field label</label>
+                        </h2>
+                        <input id="input4" type="text" pattern="\d*"/>
+                    </div>
+                    <div id="lowestCommonParentLabelDeeper2">
+                        <h2>
+                            <label for="input5">Field label</label>
+                        </h2>
+                        <input id="input5" type="text" pattern="\d*"/>
+                    </div>
+                </ez-field-edit>
+            </template>
+        </test-fixture>
+        <test-fixture id="BasicTestFixtureMultipleInputDeeper">
+            <template>
+                <ez-field-edit>
+                    <div id="lowestCommonParentInputDeeper1">
+                        <h2>
+                            <label for="input6">Field label</label>
+                        </h2>
+                        <input id="input6" type="text" pattern="\d*"/>
+                    </div>
+                    <div id="lowestCommonParentInputDeeper2">
+                        <h2>
+                            <label for="input7">Field label</label>
+                        </h2>
+                        <input id="input7" type="text" pattern="\d*"/>
+                    </div>
+                </ez-field-edit>
+            </template>
+        </test-fixture>
+        <test-fixture id="BasicTestFixtureMultipleSameDeep">
+            <template>
+                <ez-field-edit>
+                    <div id="lowestCommonParentSameDeep1">
+                        <label for="input8">Field label</label>
+                        <input id="input8" type="text" pattern="\d*"/>
+                    </div>
+                    <div id="lowestCommonParentSameDeep2">
+                        <label for="input9">Field label</label>
+                        <input id="input9" type="text" pattern="\d*"/>
+                    </div>
+                </ez-field-edit>
+            </template>
+        </test-fixture>
+        <test-fixture id="BasicTestFixtureInputWithoutLabel">
+            <template>
+                <ez-field-edit>
+                    <div>
+                        <div>
+                            <span  id="lowestParent">
+                                <input id="input10" type="text" pattern="\d*"/>
+                            </span>
+                        </div>
+                    </div>
+                </ez-field-edit>
+            </template>
+        </test-fixture>
+        <script src="js/ez-field-edit.js"></script>
+    </body>
+</html>
