@@ -1,8 +1,9 @@
 describe('ez-asynchronous-block', function() {
-    let element;
+    let element, elementForm;
 
     beforeEach(function () {
         element = fixture('BasicTestFixture');
+        elementForm = fixture('FormTestFixture');
     });
 
     it('should be defined', function () {
@@ -136,6 +137,71 @@ describe('ez-asynchronous-block', function() {
                 element.url = 'http://ihopeitwillneverexists.test';
                 testBubble(element, 'ez:asynchronousBlock:error', done);
             });
+        });
+    });
+
+    describe('form handling', function () {
+        const responseContent = '<p>AJAX posted</p>';
+
+        beforeEach(function () {
+            const response = new Response(responseContent);
+
+            // https://github.com/Polymer/polyserve/issues/197
+            // Web Component Tester internal server does not support POST
+            // request, we are forced to stub `fetch` to simulate a POST
+            // request.
+            sinon.stub(window, 'fetch', function () {
+                return Promise.resolve(response);
+            });
+        });
+
+        afterEach(function () {
+            fetch.restore();
+        });
+
+        it('should prevent and stop submit event', function () {
+            const submit = new CustomEvent('submit', {
+                bubbles: true,
+                cancelable: true,
+            });
+
+            sinon.spy(submit, 'stopPropagation');
+            elementForm.querySelector('form').dispatchEvent(submit);
+
+            assert.isTrue(submit.defaultPrevented);
+            assert.isTrue(submit.stopPropagation.called);
+        });
+
+        it('should post forms in AJAX', function (done) {
+            const form = elementForm.querySelector('form');
+            const assertAjax = function () {
+                elementForm.removeEventListener('ez:asynchronousBlock:updated', assertAjax);
+
+                assert.isTrue(fetch.called);
+                assert.isTrue(
+                    fetch.calledWith(form.action),
+                    'The fetched URI should be the form action'
+                );
+                assert.equal(
+                    fetch.args[0][1].method,
+                    form.method,
+                    'The request method should be the one indicated by the form'
+                );
+                assert.equal(
+                    elementForm.innerHTML, responseContent
+                );
+                assert.isTrue(
+                    elementForm.loaded,
+                    '`loaded` should be set to true'
+                );
+                done();
+            };
+
+            elementForm.addEventListener('ez:asynchronousBlock:updated', assertAjax);
+            form.dispatchEvent(new CustomEvent('submit', {
+                bubbles: true,
+                cancelable: true,
+            }));
         });
     });
 });

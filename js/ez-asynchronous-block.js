@@ -59,12 +59,33 @@
             };
         }
 
+        connectedCallback() {
+            super.connectedCallback();
+            this._setupFormHandling();
+        }
+
+        /**
+         * Adds a submit event listener so that forms are posted in AJAX by this
+         * component.
+         */
+        _setupFormHandling() {
+            this.addEventListener('submit', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.load(e.target);
+            });
+        }
+
         /**
          * Loads the Asynchronous Block content. If the loading is successful,
          * the `loaded` property is set to true and the
          * `ez:asynchronousBlock:updated` event is dispatched.
+         *
+         * @param {HTMLFormElement} [form]
          */
-        load() {
+        load(form) {
+            const update = form || this.url;
+
             this.loading = true;
             // FIXME: after https://jira.ez.no/browse/EZP-27582
             // this._fetch should have a second parameter with the header
