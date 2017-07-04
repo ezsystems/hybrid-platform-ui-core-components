@@ -1,9 +1,10 @@
 describe('ez-asynchronous-block', function() {
-    let element, elementForm;
+    let element, elementForm, elementNavigation;
 
     beforeEach(function () {
         element = fixture('BasicTestFixture');
         elementForm = fixture('FormTestFixture');
+        elementNavigation = fixture('LocalNavigationTestFixture');
     });
 
     it('should be defined', function () {
@@ -137,6 +138,47 @@ describe('ez-asynchronous-block', function() {
                 element.url = 'http://ihopeitwillneverexists.test';
                 testBubble(element, 'ez:asynchronousBlock:error', done);
             });
+        });
+    });
+
+    describe('local navigation', function () {
+        let click;
+
+        beforeEach(function () {
+            click = new CustomEvent('click', {
+                bubbles: true,
+                cancelable: true,
+            });
+            sinon.spy(click, 'stopPropagation');
+        });
+
+        it('should ignore normal links', function () {
+            elementNavigation.querySelector('.normal').dispatchEvent(click);
+
+            assert.isFalse(click.defaultPrevented);
+            assert.isFalse(click.stopPropagation.called);
+        });
+
+        function testLocalNavigation(linkSelector, done) {
+            const assertNavigation = function () {
+                elementNavigation.removeEventListener('ez:asynchronousBlock:updated', assertNavigation);
+
+                assert.isTrue(click.defaultPrevented);
+                assert.isTrue(click.stopPropagation.called);
+                assert.isNotNull(elementNavigation.querySelector('.updated'));
+                done();
+            };
+
+            elementNavigation.addEventListener('ez:asynchronousBlock:updated', assertNavigation);
+            elementNavigation.querySelector(linkSelector).dispatchEvent(click);
+        }
+
+        it('should follow local navigation links', function (done) {
+            testLocalNavigation('.local1', done);
+        });
+
+        it('should follow links in local navigation block', function (done) {
+            testLocalNavigation('.local2', done);
         });
     });
 
