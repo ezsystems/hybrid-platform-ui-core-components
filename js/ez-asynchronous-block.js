@@ -1,3 +1,4 @@
+/* global eZ */
 (function () {
     // FIXME: after https://jira.ez.no/browse/EZP-27582
     // remove that function!
@@ -25,7 +26,7 @@
      * @polymerElement
      * @demo demo/ez-asynchronous-block.html
      */
-    class AsynchronousBlock extends Polymer.Element {
+    class AsynchronousBlock extends eZ.mixins.AjaxFetcher(Polymer.Element) {
         static get is() {
             return 'ez-asynchronous-block';
         }
@@ -64,15 +65,11 @@
          * `ez:asynchronousBlock:updated` event is dispatched.
          */
         load() {
-            const fetchOptions = {
-                credentials: 'same-origin',
-                // FIXME: after https://jira.ez.no/browse/EZP-27582
-                // this is where the custom Header should be set
-                redirect: 'follow',
-            };
-
             this.loading = true;
-            fetch(this.url, fetchOptions)
+            // FIXME: after https://jira.ez.no/browse/EZP-27582
+            // this._fetch should have a second parameter with the header
+            // so the server generates the HTML without the app layout
+            this._fetch(update)
                 .then((response) => {
                     if ( response.status >= 400 ) {
                         throw new Error();
