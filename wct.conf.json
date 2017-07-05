@@ -5,6 +5,10 @@
             "browsers": [{
                 "browserName": "MicrosoftEdge",
                 "platform": "Windows 10",
+                "version": "15.15063"
+            }, {
+                "browserName": "MicrosoftEdge",
+                "platform": "Windows 10",
                 "version": "14.14393"
             }, {
                 "browserName": "safari",
