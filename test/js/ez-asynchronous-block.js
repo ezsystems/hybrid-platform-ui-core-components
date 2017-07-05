@@ -153,10 +153,26 @@ describe('ez-asynchronous-block', function() {
         });
 
         it('should ignore normal links', function () {
+            // this test is a bit complicated because we need to prevent the
+            // click event at the document level to prevent Edge/Safari from browsing
+            // so preventDefault() will be called in the test but we want to
+            // check that's it not called, that's why `preventDefaultCalled`
+            // local variable was introduced to differentiate those 2
+            // situations.
+            let preventDefaultCalled = false;
+            const prevent = function(e) {
+                preventDefaultCalled = e.preventDefault.called;
+                e.preventDefault.restore();
+                e.preventDefault();
+            };
+
+            sinon.spy(click, 'preventDefault');
+            document.addEventListener('click', prevent);
             elementNavigation.querySelector('.normal').dispatchEvent(click);
 
-            assert.isFalse(click.defaultPrevented);
+            assert.isFalse(preventDefaultCalled);
             assert.isFalse(click.stopPropagation.called);
+            document.removeEventListener('click', prevent);
         });
 
         function testLocalNavigation(linkSelector, done) {
