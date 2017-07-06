@@ -701,35 +701,133 @@ describe('ez-platform-ui-app', function() {
         });
 
         describe('error handling', function () {
-            it('should handle a JSON decode error', function (done) {
+            function testError(url, assertFunc) {
                 const observer = new MutationObserver(function () {
-                    assert.isFalse(
-                        element.updating,
-                        '`updating` should have been set back to false`'
-                    );
+                    assertFunc();
                     observer.disconnect();
-                    done();
                 });
 
-                element.url = urlInvalidJson;
+                element.url = url;
                 observer.observe(element, {
                     attributes: true,
                     attributeFilter: ['updating'],
                 });
+            }
+
+            describe('Invalid JSON', function () {
+                it('should be handled', function (done) {
+                    const previousUrl = element.url;
+
+                    testError(urlInvalidJson, function () {
+                        assert.isFalse(
+                            element.updating,
+                            '`updating` should have been set back to false`'
+                        );
+                        assert.equal(
+                            element.url, previousUrl,
+                            'The url should be set back its previous value'
+                        );
+                        done();
+                    });
+                });
+
+                it('should notify the user', function (done) {
+                    testError(urlInvalidJson, function () {
+                        const notification = element.notifications[0];
+
+                        assert.equal(element.notifications.length, 1);
+                        assert.equal(
+                            notification.type, 'error',
+                            'The notification should be an error'
+                        );
+                        assert.isTrue(notification.copyable, 'Details should be copyable');
+                        assert.isTrue(
+                            notification.details.indexOf('invalid') !== -1,
+                            'Details should contain the response'
+                        );
+
+                        done();
+                    });
+                });
+
+                it('should notify the user with the debug link', function (done) {
+                    const debugLink = 'debuglink';
+
+                    sinon.stub(Headers.prototype, 'has').withArgs('X-Debug-Token-Link').returns(true);
+                    sinon.stub(Headers.prototype, 'get').withArgs('X-Debug-Token-Link').returns(debugLink);
+                    testError(urlInvalidJson, function () {
+                        const notification = element.notifications[0];
+
+                        assert.isTrue(
+                            notification.content.indexOf(debugLink) !== -1,
+                            'Notification content should include the debug link'
+                        );
+                        Headers.prototype.has.restore();
+                        Headers.prototype.get.restore();
+                        done();
+                    });
+                });
+            });
+
+            describe('connection error', function () {
+                const blackHoleUrl = 'http://black--hole.dev';
+
+                it('should be handled', function (done) {
+                    const previousUrl = element.url;
+
+                    testError(blackHoleUrl, function () {
+                        assert.isFalse(
+                            element.updating,
+                            '`updating` should have been set back to false`'
+                        );
+                        assert.equal(
+                            element.url, previousUrl,
+                            'The url should be set back its previous value'
+                        );
+                        done();
+                    });
+                });
+
+                it('should notify the user', function (done) {
+                    testError(blackHoleUrl, function () {
+                        const notification = element.notifications[0];
+
+                        assert.equal(element.notifications.length, 1);
+                        assert.equal(
+                            notification.type, 'error',
+                            'The notification should be an error'
+                        );
+
+                        done();
+                    });
+                });
             });
 
             describe('server error', function () {
-                it('should prevent browser URI update', function () {
-                    const doNotExist = '/i/do/not/exist';
+                beforeEach(function () {
+                    sinon.stub(Response.prototype, 'text', function () {
+                        return Promise.resolve('{}');
+                    });
+                });
 
-                    element.addEventListener('ez:app:updated', function () {
+                afterEach(function () {
+                    Response.prototype.text.restore();
+                });
+                it('should prevent browser URI update', function (done) {
+                    const doNotExist = '/i/do/not/exist';
+                    const assertUrl = function () {
+                        element.removeEventListener('ez:app:updated', assertUrl);
+
                         assert.notEqual(
                             element.url,
                             doNotExist,
                             'The URI should remain the same after an error'
                         );
-                    });
-                    element.url = '/i/do/not/exist';
+                        done();
+                    };
+
+                    element.addEventListener('ez:app:updated', assertUrl);
+                    element.url = doNotExist;
                 });
             });
         });
@@ -830,8 +928,8 @@ describe('ez-platform-ui-app', function() {
             function mockFetchResponseRedirect() {
                 const response = {
                     url: this.redirectUrl,
-                    json: function () {
-                        return {};
+                    text: function () {
+                        return '{}';
                     },
                 };
 

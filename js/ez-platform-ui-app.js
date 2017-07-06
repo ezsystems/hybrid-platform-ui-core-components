@@ -264,26 +264,40 @@
          * @param {String} oldUrl the previous URL value
          */
         _update(update, oldUrl) {
-            let response;
+            let response, content;
 
             this.updating = true;
             this._fetch(update, {'X-AJAX-Update': '1'})
                 .then((resp) => {
                     response = resp;
                     this.url = response.url;
-                    return resp.json();
+                    return resp.text();
+                })
+                .then((text) => {
+                    content = text;
+                    return JSON.parse(text);
                 })
                 .then(this._updateApp.bind(this))
                 .then((struct) => this._endUpdate(oldUrl, (update.method === 'post'), response, struct))
                 .catch((error) => {
-                    this.updating = false;
+                    const notification = {type: 'error'};
 
-                    // FIXME
-                    // https://jira.ez.no/browse/EZP-27374
-                    // proper error handling
-                    // this includes checking HTTP status code (>= 400) but also
-                    // handling connection error and JSON decode issues as well.
-                    console.error('Error fetching update', error);
+                    this.url = oldUrl;
+                    this.updating = false;
+                    // FIXME: error message should be translatable https://jira.ez.no/browse/EZP-27527
+                    if ( error instanceof SyntaxError ) {
+                        let debugLink = '';
+
+                        if ( response.headers.has('X-Debug-Token-Link') ) {
+                            debugLink = ` <a href="${response.headers.get('X-Debug-Token-Link')}">View in Symfony Profiler</a>`;
+                        }
+                        notification.content = `<p>Unable to decode the server response.${debugLink}</p>`;
+                        notification.details = `Error message:\n${error.message}\n\nJSON Server response:\n${content}`;
+                        notification.copyable = true;
+                    } else {
+                        notification.content = '<p>Looks like the server is taking to long to respond. Please try again</p>';
+                    }
+                    this.notifications = [notification];
                 });
         }
 
