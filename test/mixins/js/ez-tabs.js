@@ -5,22 +5,29 @@ describe('ez-tabs', function () {
         element = fixture('BasicTestFixture');
     });
 
-    it('should define the eZ.TabsMixin', function () {
-        assert.isFunction(window.eZ.TabsMixin);
+    it('should define `eZ.mixins.Tabs`', function () {
+        assert.isFunction(window.eZ.mixins.Tabs);
     });
 
     describe('swich tab', function () {
+        let link, label, panel;
+
         function simulateClick(element) {
             element.dispatchEvent(new CustomEvent('click', {
                 bubbles: true,
             }));
         }
 
+        beforeEach(function () {
+            link = element.querySelector('.tab-link');
+            label = link.parentNode;
+            panel = element.querySelector(link.getAttribute('href'));
+        });
+
         it('should change tab', function () {
-            const label = element.querySelector('.tab-label');
             const selected = element.querySelector('.is-tab-selected');
 
-            simulateClick(label);
+            simulateClick(link);
 
             Array.prototype.forEach.call(selected, function (el) {
                 assert.isFalse(
@@ -29,11 +36,11 @@ describe('ez-tabs', function () {
                 );
             });
             assert.isTrue(
-                label.parentNode.classList.contains('is-tab-selected'),
+                label.classList.contains('is-tab-selected'),
                 'A new tab should be selected'
             );
             assert.isTrue(
-                element.querySelector(label.getAttribute('href')).classList.contains('is-tab-selected'),
+                panel.classList.contains('is-tab-selected'),
                 'A new panel should be visible'
             );
         });
@@ -46,6 +53,56 @@ describe('ez-tabs', function () {
                 initialContent,
                 element.innerHTML
             );
+        });
+
+        describe('`ez:tabChange` event', function () {
+            it('should be dispatched', function () {
+                let tabChangeEvent = false;
+
+                element.addEventListener('ez:tabChange', function (e) {
+                    tabChangeEvent = true;
+
+                    assert.strictEqual(
+                        label, e.detail.label,
+                        'The tab label should be provided in the event detail'
+                    );
+                    assert.strictEqual(
+                        panel, e.detail.panel,
+                        'The tab panel should be provided in the event detail'
+                    );
+                });
+                simulateClick(link);
+
+                assert.isTrue(tabChangeEvent);
+            });
+
+            it('should bubble', function () {
+                let bubble = false;
+                const assertBubble = function () {
+                    bubble = true;
+                    document.removeEventListener('ez:tabChange', assertBubble);
+                };
+
+                document.addEventListener('ez:tabChange', assertBubble);
+                simulateClick(link);
+                assert.isTrue(bubble);
+            });
+
+            it('should be preventable', function () {
+                element.addEventListener('ez:tabChange', function (e) {
+                    e.preventDefault();
+                });
+                simulateClick(link);
+
+                assert.isFalse(
+                    label.classList.contains('is-tab-selected'),
+                    'A new tab should not be selected'
+                );
+                assert.isFalse(
+                    panel.classList.contains('is-tab-selected'),
+                    'A new panel should not be visible'
+                );
+            });
         });
     });
 });

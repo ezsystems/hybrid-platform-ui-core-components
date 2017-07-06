@@ -5,6 +5,10 @@
             "browsers": [{
                 "browserName": "MicrosoftEdge",
                 "platform": "Windows 10",
+                "version": "15.15063"
+            }, {
+                "browserName": "MicrosoftEdge",
+                "platform": "Windows 10",
                 "version": "14.14393"
             }, {
                 "browserName": "safari",
@@ -13,19 +17,19 @@
             }, {
                 "browserName": "firefox",
                 "platform": "macOS 10.12",
-                "version": "52.0"
+                "version": "latest"
             }, {
                 "browserName": "firefox",
                 "platform": "Windows 10",
-                "version": "52.0"
+                "version": "latest"
             }, {
                 "browserName": "chrome",
                 "platform": "macOS 10.12",
-                "version": "57.0"
+                "version": "latest"
             }, {
                 "browserName": "chrome",
                 "platform": "Windows 10",
-                "version": "57.0"
+                "version": "latest"
             }]
         }
     }

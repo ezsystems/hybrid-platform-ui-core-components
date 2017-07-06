@@ -3,7 +3,7 @@
     /**
      * <ez-server-side-content> allows to apply enhancement to a server side
      * generated content. For now, this class is able to handle the tabs markup
-     * thanks to the eZ.TabsMixin.
+     * thanks to the `eZ.mixins.Tabs` class expression mixin.
      *
      * Among others standard APIs, this component relies on `Element.closest`.
      * `Element.closest` is not available in Edge 14. So for this component to
@@ -13,7 +13,7 @@
      * @polymerElement
      * @demo demo/ez-server-side-content.html
      */
-    class ServerSideContent extends eZ.TabsMixin(Polymer.Element) {
+    class ServerSideContent extends eZ.mixins.Tabs(Polymer.Element) {
         static get is() {
             return 'ez-server-side-content';
         }

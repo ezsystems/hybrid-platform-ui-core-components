@@ -1,3 +1,4 @@
+/* global eZ */
 (function () {
     function updateElement(element, updateStruct) {
         if ( typeof updateStruct === 'string' ) {
@@ -75,7 +76,7 @@
      * @polymerElement
      * @demo demo/ez-platform-ui-app.html
      */
-    class PlatformUiApp extends Polymer.Element {
+    class PlatformUiApp extends eZ.mixins.AjaxFetcher(Polymer.Element) {
         static get is() {
             return 'ez-platform-ui-app';
         }
@@ -141,23 +142,25 @@
         constructor() {
             super();
             this._enhanceNavigation();
-            this._handleContentDiscover();
-            this._handleNavigateTo();
+            this._setAppEventsListeners();
         }
 
         /**
-         * Adds event listener for `ez:contentDiscover` event.
+         * Adds events listeners for the following app level events:
+         *
+         * - `ez:contentDiscover` to create a Universal Discovery element
+         * - `ez:navigateTo` to navigate to the given url
+         * - `ez:notify` to display a notification
          */
-        _handleContentDiscover() {
+        _setAppEventsListeners() {
             this.addEventListener('ez:contentDiscover', this._createUDCustomElement.bind(this));
-        }
 
-        /**
-         * Adds an event listener for the ez:navigateTo event to navigate to the url provided by the event details
-         */
-        _handleNavigateTo() {
             this.addEventListener('ez:navigateTo', (e) => {
                 this.url = e.detail.url;
+            });
+
+            this.addEventListener('ez:notify', (e) => {
+                this.notifications = [e.detail.notification];
             });
         }
 
@@ -195,21 +198,34 @@
 
         /**
          * Renders the given `notifications` in the app. It's an observer of the
-         * `notifications` property.
+         * `notifications` property. It also takes care of setting the
+         * notification `timeout` depending on the notification `type` if the
+         * timeout is not provided.
          *
          * @param {Array} notifications
          */
         _renderNotifications(notifications) {
             const bar = this.querySelector('#ez-notification-bar');
+            const DEFAULT_ERROR_TIMEOUT = 0;
+            const DEFAULT_TIMEOUT = 10;
 
             if ( !notifications ) {
                 return;
             }
             notifications.forEach((info) => {
                 const notification = this.ownerDocument.createElement('ez-notification');
+                let timeout = parseInt(info.timeout, 10);
+
+                if ( isNaN(timeout) ) {
+                    if ( info.type === 'error' ) {
+                        timeout = DEFAULT_ERROR_TIMEOUT;
+                    } else {
+                        timeout = DEFAULT_TIMEOUT;
+                    }
+                }
 
                 notification.type = info.type;
-                notification.timeout = parseInt(info.timeout, 10);
+                notification.timeout = timeout;
                 notification.details = info.details;
                 notification.copyable = !!info.copyable;
                 notification.innerHTML = info.content;
@@ -248,37 +264,17 @@
          * @param {String} oldUrl the previous URL value
          */
         _update(update, oldUrl) {
-            const fetchOptions = {
-                credentials: 'same-origin',
-                headers: new Headers({
-                    'X-AJAX-Update': '1',
-                }),
-                redirect: 'follow',
-            };
             let response;
-            let url = update;
-
-            if ( update instanceof HTMLFormElement ) {
-                const data = new FormData(update);
-
-                url = update.action;
-                fetchOptions.method = update.method;
-                if ( this._formButton ) {
-                    data.append(this._formButton.name, this._formButton.value);
-                }
-                fetchOptions.body = data;
-            }
 
             this.updating = true;
-
-            fetch(url, fetchOptions)
-                .then(this._checkRedirection.bind(this, url))
+            this._fetch(update, {'X-AJAX-Update': '1'})
                 .then((resp) => {
                     response = resp;
+                    this.url = response.url;
                     return resp.json();
                 })
                 .then(this._updateApp.bind(this))
-                .then((struct) => this._endUpdate(oldUrl, (fetchOptions.method === 'post'), response, struct))
+                .then((struct) => this._endUpdate(oldUrl, (update.method === 'post'), response, struct))
                 .catch((error) => {
                     this.updating = false;
 
@@ -287,7 +283,7 @@
                     // proper error handling
                     // this includes checking HTTP status code (>= 400) but also
                     // handling connection error and JSON decode issues as well.
-                    console.error('Error fetching update', url, fetchOptions, error);
+                    console.error('Error fetching update', error);
                 });
         }
 
@@ -318,22 +314,6 @@
             this._fireUpdated(response);
 
             return struct;
-        }
-
-        /**
-         * Checks whether the server redirected to a new URL. If yes, it updates
-         * the `url` property to keep it in sync with the actual app state.
-         *
-         * @param {String} requestUrl
-         * @param {Response} response
-         * @return {Response}
-         */
-        _checkRedirection(requestUrl, response) {
-            if ( !response.url.endsWith(requestUrl) ) {
-                this.url = response.url;
-            }
-
-            return response;
         }
 
         /**
@@ -402,8 +382,6 @@
                 if ( PlatformUiApp._isEnhancedNavigationLink(anchor) ) {
                     e.preventDefault();
                     this.url = anchor.href;
-                } else if ( PlatformUiApp._isSubmitButton(e.target) && PlatformUiApp._isInsideEnhancedForm(e.target) ) {
-                    this._formButton = e.target;
                 }
             });
             this.addEventListener('submit', (e) => {
@@ -419,7 +397,6 @@
                 } else {
                     this._update(form);
                 }
-                delete this._formButton;
             });
             this._popstateHandler = (e) => {
                 this._goBackToState(e.state);
@@ -461,17 +438,6 @@
                 anchor.getAttribute('href').indexOf('#') !== 0 &&
                 !anchor.matches('.ez-js-standard-navigation, .ez-js-standard-navigation a')
             );
-        }
-
-        /**
-         * Checks whether the given `element` is a form submit button.
-         *
-         * @param {HTMLElement} element
-         * @static
-         * @return {Boolean}
-         */
-        static _isSubmitButton(element) {
-            return element && element.matches('form input[type="submit"], form button, form input[type="image"]');
         }
 
         /**

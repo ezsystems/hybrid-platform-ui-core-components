@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-asynchronous-block test</title>
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../element-matches/closest.js"></script><!-- for Edge 14 -->
+        <script src="../../fetch/fetch.js"></script><!-- for Safari 10.0 -->
+        <script src="../../web-component-tester/browser.js"></script>
+
+        <link rel="import" href="../ez-asynchronous-block.html">
+    </head>
+    <body>
+
+        <test-fixture id="BasicTestFixture">
+            <template>
+                <ez-asynchronous-block url="/test/responses/asynchronous-block.html"></ez-asynchronous-block>
+            </template>
+        </test-fixture>
+
+        <test-fixture id="FormTestFixture">
+            <template>
+                <ez-asynchronous-block><form method="post" action="not-used-in-test"></form></ez-asynchronous-block>
+            </template>
+        </test-fixture>
+
+        <test-fixture id="LocalNavigationTestFixture">
+            <template>
+                <ez-asynchronous-block>
+                    <a href="/test/responses/asynchronous-block.html" class="local1 ez-js-local-navigation">Local navigation</a>
+                    <a href="/test/responses/asynchronous-block.html" class="normal">Normal navigation</a>
+                    <div class="ez-js-local-navigation">
+                        <a href="/test/responses/asynchronous-block.html" class="local2">Local navigation again</a>
+                    </div>
+                </ez-asynchronous-block>
+            </template>
+        </test-fixture>
+
+        <script src="js/ez-asynchronous-block.js"></script>
+    </body>
+</html>

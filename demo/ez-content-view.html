@@ -20,7 +20,9 @@
                         <div class="ez-tabs">
                             <ul class="ez-tabs-list">
                                 <li class="ez-tabs-label is-tab-selected"><a href="#tab1">Tab 1</a></li>
+                                <li class="ez-tabs-label"><a href="#async-tab">Asynchronous tab</a></li>
                                 <li class="ez-tabs-label"><a href="#tab2">Tab 2</a></li>
+                                <li class="ez-tabs-label"><a href="#broken-async-tab">Broken asynchronous tab</a></li>
                             </ul>
                             <div class="ez-tabs-panels">
                                 <div class="ez-tabs-panel is-tab-selected" id="tab1">
@@ -31,9 +33,20 @@
                                     <p>This is the content of <em>Tab 2</em></p>
                                     <p>Click on <em>Tab 1</em> to switch to the other tab</p>
                                 </div>
+                                <ez-asynchronous-block class="ez-tabs-panel" id="async-tab" url="asynchronous-load.html"></ez-asynchronous-block>
+                                <ez-asynchronous-block class="ez-tabs-panel" id="broken-async-tab" url="does-not-exist.html"></ez-asynchronous-block>
                             </div>
                         </div>
                     </ez-content-view>
+                    <hr>
+                    <div id="log">
+                        <h2>Event log</h2>
+                    </div>
+                    <script>
+                        document.addEventListener('ez:notify', function (e) {
+                            document.querySelector('#log').innerHTML += e.detail.notification.content;
+                        });
+                    </script>
                 </template>
             </demo-snippet>
         </div>

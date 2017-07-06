@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-notifier test</title>
+
+        <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../../web-component-tester/browser.js"></script>
+
+        <link rel="import" href="../../../polymer/polymer-element.html">
+        <link rel="import" href="../../mixins/ez-notifier.html">
+        <script>
+        window.addEventListener('WebComponentsReady', function () {
+            class TestElement extends eZ.mixins.Notifier(Polymer.Element) {
+                static get is() {
+                    return 'ez-test-notifier';
+                }
+            }
+
+            window.customElements.define(TestElement.is, TestElement);
+        });
+        </script>
+    </head>
+    <body>
+
+        <test-fixture id="BasicTestFixture">
+            <template>
+                <ez-test-notifier></ez-test-notifier>
+            </template>
+        </test-fixture>
+
+        <script src="js/ez-notifier.js"></script>
+    </body>
+</html>
