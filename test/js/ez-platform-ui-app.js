@@ -127,10 +127,13 @@ describe('ez-platform-ui-app', function() {
                 });
 
                 it('should be unset after the update', function (done) {
-                    element.addEventListener('ez:app:updated', function () {
+                    const check = function () {
+                        element.removeEventListener('ez:app:updated', check);
                         assert.notOk(element.updating);
                         done();
-                    });
+                    };
+
+                    element.addEventListener('ez:app:updated', check);
                     element.url = urlEmptyUpdate;
                 });
 
@@ -769,10 +772,10 @@ describe('ez-platform-ui-app', function() {
 
     describe('history', function () {
         it('should push an history entry', function (done) {
-            element.addEventListener('ez:app:updated', function () {
-                assert.equal(
-                    urlEmptyUpdate,
-                    history.state.url
+            const check = function () {
+                element.removeEventListener('ez:app:updated', check);
+                assert.isTrue(
+                    history.state.url.endsWith(urlEmptyUpdate)
                 );
                 assert.ok(
                     history.state.enhanced,
@@ -780,7 +783,9 @@ describe('ez-platform-ui-app', function() {
                 );
 
                 done();
-            });
+            };
+
+            element.addEventListener('ez:app:updated', check);
             element.url = urlEmptyUpdate;
         });
 
