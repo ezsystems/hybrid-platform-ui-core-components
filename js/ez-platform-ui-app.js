@@ -257,48 +257,77 @@
 
         /**
          * Runs an AJAX request and updates the app with the given update url or
-         * form.
+         * form. It runs a suite of operations that creates, enriches and uses
+         * an *update info* object containing informations about the current
+         * update.
          *
          * @param {String|HTMLFormElement} update either an URL to fetch or an
          * HTMLFormElement (POST) to submit
          * @param {String} oldUrl the previous URL value
          */
         _update(update, oldUrl) {
-            let response, content;
-
             this.updating = true;
             this._fetch(update, {'X-AJAX-Update': '1'})
-                .then((resp) => {
-                    response = resp;
+                .then((response) => {
                     this.url = response.url;
-                    return resp.text();
+                    return response.text().then(function (text) {
+                        return Promise.resolve({oldUrl: oldUrl, update: update, response: response, text: text});
+                    });
                 })
-                .then((text) => {
-                    content = text;
-                    return JSON.parse(text);
-                })
+                .then(this._parseJSON.bind(this))
                 .then(this._updateApp.bind(this))
-                .then((struct) => this._endUpdate(oldUrl, (update.method === 'post'), response, struct))
-                .catch((error) => {
-                    const notification = {type: 'error'};
-
+                .then(this._endUpdate.bind(this))
+                .catch((updateInfo) => {
                     this.url = oldUrl;
                     this.updating = false;
-                    // FIXME: error message should be translatable https://jira.ez.no/browse/EZP-27527
-                    if ( error instanceof SyntaxError ) {
-                        let debugLink = '';
 
-                        if ( response.headers.has('X-Debug-Token-Link') ) {
-                            debugLink = ` <a href="${response.headers.get('X-Debug-Token-Link')}">View in Symfony Profiler</a>`;
-                        }
-                        notification.content = `<p>Unable to decode the server response.${debugLink}</p>`;
-                        notification.details = `Error message:\n${error.message}\n\nJSON Server response:\n${content}`;
-                        notification.copyable = true;
-                    } else {
-                        notification.content = '<p>Looks like the server is taking to long to respond. Please try again</p>';
-                    }
-                    this.notifications = [notification];
+                    this._notifyError(updateInfo);
                 });
+        }
+
+        /**
+         * Notifies the user about an error that happened during the update
+         * process.
+         *
+         * @param {Object} updateInfo
+         */
+        _notifyError(updateInfo) {
+            const notification = {type: 'error'};
+            const error = updateInfo.error;
+
+            // FIXME: error message should be translatable https://jira.ez.no/browse/EZP-27527
+            if ( error instanceof SyntaxError ) {
+                const {response, text} = updateInfo;
+                let debugLink = '';
+
+                if ( response.headers.has('X-Debug-Token-Link') ) {
+                    debugLink = ` <a href="${response.headers.get('X-Debug-Token-Link')}">View in Symfony Profiler</a>`;
+                }
+                notification.content = `<p>Unable to decode the server response.${debugLink}</p>`;
+                notification.details = `Error message:\n${error.message}\n\nJSON Server response:\n${text}`;
+                notification.copyable = true;
+            } else {
+                notification.content = '<p>Looks like the server is taking to long to respond. Please try again</p>';
+            }
+            this.notifications = [notification];
+        }
+
+        /**
+         * Parses the response content available in the `updateInfo` to register
+         * the update structure in `updateInfo` under `struct` property. Throws
+         * `updateInfo` filled with the error in case of JSON parsing error
+         *
+         * @param {Object} updateInfo
+         * @return {Object}
+         */
+        _parseJSON(updateInfo) {
+            try {
+                updateInfo.struct = JSON.parse(updateInfo.text);
+            } catch (e) {
+                updateInfo.error = e;
+                throw updateInfo;
+            }
+            return updateInfo;
         }
 
         /**
@@ -306,13 +335,13 @@
          * updated, it also sets `updating` to false and fire the updated event
          * to signal the very end of the update process.
          *
-         * @param {Response} oldUrl
-         * @param {Boolean} isPost
-         * @param {Response} response
-         * @param {Object} struct
+         * @param {Object} updateInfo
          * @return {Object}
          */
-        _endUpdate(oldUrl, isPost, response, struct) {
+        _endUpdate(updateInfo) {
+            const {oldUrl, response, struct} = updateInfo;
+            const isPost = updateInfo.update.method === 'post';
+
             if ( response.status > 400 ) {
                 this.url = oldUrl;
             } else {
@@ -374,15 +403,15 @@
         }
 
         /**
-         * Updates the app from the given `updateStruct` structure.
+         * Updates the app from the given `updateInfo` object.
          *
-         * @param {Object} updateStruct
+         * @param {Object} updateInfo
          * @return {Object}
          */
-        _updateApp(updateStruct) {
-            updateElement.call(null, this, updateStruct.update);
+        _updateApp(updateInfo) {
+            updateElement.call(null, this, updateInfo.struct.update);
 
-            return updateStruct;
+            return updateInfo;
         }
 
         /**

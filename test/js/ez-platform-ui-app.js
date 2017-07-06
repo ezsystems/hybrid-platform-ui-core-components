@@ -929,7 +929,7 @@ describe('ez-platform-ui-app', function() {
                 const response = {
                     url: this.redirectUrl,
                     text: function () {
-                        return '{}';
+                        return Promise.resolve('{}');
                     },
                 };
 
