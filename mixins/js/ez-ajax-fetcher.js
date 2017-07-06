@@ -7,9 +7,9 @@ window.eZ = window.eZ || {};
      * Class expression mixin that adds support for fetching an URL or submitting
      * forms with an AJAX request.
      *
-     * The resulting class relies on the `fetch` which is not supported by
-     * Safari 10.0. So for the resulting component to work in this browser, the
-     * page should include a polyfill for this standard API.
+     * The resulting class relies on the `fetch` function which is not supported
+     * by Safari 10.0. So for the resulting component to work in this browser,
+     * the page should include a polyfill for this standard API.
      *
      * @param {Function} superClass
      * @return {Function}
@@ -62,7 +62,7 @@ window.eZ = window.eZ || {};
 
                     url = update.action;
                     fetchOptions.method = update.method;
-                    if ( this._formButton ) { // TODO check if button is inside the submitted form?
+                    if ( this._formButton ) {
                         data.append(this._formButton.name, this._formButton.value);
                     }
                     fetchOptions.body = data;

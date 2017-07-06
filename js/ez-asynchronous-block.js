@@ -27,9 +27,9 @@
      *   the block will be updated with the server response.
      *
      * Among others standard APIs, this component relies on `fetch` and
-     * `Element.closest`. `fetch` is not supported by Safari 10.0 and
-     * `Element.closest` is not available in Edge 14. So for this component to
-     * work in those browser, the page should include polyfills of those
+     * `Element.matches`. `fetch` is not supported by Safari 10.0 and
+     * `Element.matches` is not available in Edge 14. So for this component to
+     * work in those browsers, the page should include polyfills of those
      * standard API.
      *
      * @polymerElement
@@ -74,7 +74,7 @@
         }
 
         /**
-         * Adds a event listeners to implement the *local* navigation.
+         * Adds event listeners to implement the *local* navigation.
          * If a user clicks on a link with the class `ez-js-local-navigation` or
          * which is descendant of an element with that class, the Asynchronous
          * Block will do the corresponding AJAX request and updates itself with
