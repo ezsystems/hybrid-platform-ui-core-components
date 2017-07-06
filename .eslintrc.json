@@ -33,7 +33,7 @@
             }
         ],
         "capitalized-comments": "off",
-        "class-methods-use-this": "error",
+        "class-methods-use-this": "off",
         "comma-dangle": ["error", "always-multiline"],
         "comma-spacing": [
             "error",
