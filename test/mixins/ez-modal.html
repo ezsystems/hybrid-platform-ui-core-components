@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-modal test</title>
+
+        <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../../element-matches/closest.js"></script><!-- for Edge 14 -->
+        <script src="../../../web-component-tester/browser.js"></script>
+
+        <link rel="import" href="../../../polymer/polymer-element.html">
+        <link rel="import" href="../../mixins/ez-modal.html">
+        <script>
+        window.addEventListener('WebComponentsReady', function () {
+            class TestElement extends eZ.mixins.Modal(Polymer.Element) {
+                static get is() {
+                    return 'ez-test-modal';
+                }
+            }
+
+            window.customElements.define(TestElement.is, TestElement);
+        });
+        </script>
+    </head>
+    <body>
+        <test-fixture id="ModalTestFixture">
+            <template>
+                <ez-test-modal>
+                    <button type="button" value="#modal" class="ez-js-open-modal">Open</button>
+
+                    <dialog id="modal" class="ez-modal">
+                        <p>This is a modal</p>
+
+                        <button type="button" class="ez-js-close-modal">Close</button>
+                    </dialog>
+                </ez-test-modal>
+            </template>
+        </test-fixture>
+
+        <script src="js/ez-modal.js"></script>
+    </body>
+</html>

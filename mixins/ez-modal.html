@@ -1,0 +1,25 @@
+<link rel="stylesheet" href="../../dialog-polyfill/dialog-polyfill.css">
+<style>
+.ez-modal {
+    transform: scale(0);
+    transition: all ease 0.3s;
+}
+
+.ez-modal.is-modal-open {
+    transform: scale(1);
+}
+
+.ez-modal::backdrop,
+.ez-modal + .backdrop /* <dialog> polyfill */ {
+    opacity: 0;
+    transition: opacity ease 0.3s;
+}
+
+.ez-modal.is-modal-open::backdrop,
+.ez-modal.is-modal-open + .backdrop /* <dialog> polyfill */ {
+    opacity: 1;
+}
+
+</style>
+<script src="../../dialog-polyfill/dialog-polyfill.js"></script>
+<script src="js/ez-modal.js"></script>

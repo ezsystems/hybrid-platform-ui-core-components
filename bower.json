@@ -2,7 +2,8 @@
   "name": "hybrid-platform-ui-core-components",
   "main": "core-components.html",
   "dependencies": {
-    "polymer": "^2.0.0"
+    "polymer": "^2.0.0",
+    "dialog-polyfill": "^0.4.7"
   },
   "devDependencies": {
     "iron-demo-helpers": "^2.0.0",
