@@ -29,6 +29,8 @@
         return updateStruct;
     }
 
+    const Base = eZ.mixins.Modal(eZ.mixins.AjaxFetcher(Polymer.Element));
+
     /**
      * `<ez-platform-ui-app>` represents the application in a page which will
      * enhance the navigation by avoiding full page refresh. It is responsible
@@ -76,7 +78,7 @@
      * @polymerElement
      * @demo demo/ez-platform-ui-app.html
      */
-    class PlatformUiApp extends eZ.mixins.AjaxFetcher(Polymer.Element) {
+    class PlatformUiApp extends Base {
         static get is() {
             return 'ez-platform-ui-app';
         }

@@ -83,6 +83,21 @@
             </template>
         </test-fixture>
 
+       <test-fixture id="ModalTestFixture">
+            <template>
+                <ez-platform-ui-app>
+                    <button type="button" value="#modal" class="ez-js-open-modal">Open</button>
+
+                    <dialog id="modal" class="ez-modal">
+                        <p>This is a modal</p>
+
+                        <button type="button" class="ez-js-close-modal">Close</button>
+                    </dialog>
+                </ez-platform-ui-app>
+            </template>
+        </test-fixture>
+
         <script src="js/ez-platform-ui-app.js"></script>
+        <script src="mixins/js/ez-modal.js"></script>
     </body>
 </html>
