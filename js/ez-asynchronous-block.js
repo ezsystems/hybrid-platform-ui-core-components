@@ -107,6 +107,8 @@
                 .then((response) => {
                     if ( response.status >= 400 ) {
                         throw new Error();
+                    } else if ( response.status === 205 ) {
+                        throw response.headers;
                     }
                     return response;
                 })
@@ -117,9 +119,19 @@
                     this.loaded = true;
                     this._dispatchUpdated(update);
                 })
-                .catch((error) => {
+                .catch((param) => {
                     this.loading = false;
-                    this._dispatchError(error);
+                    if (param instanceof Error) {
+                        this._dispatchError(param);
+                    } else {
+                        const event = new CustomEvent('ez:navigateTo', {
+                            detail: {url: param.get('App-Location')},
+                            bubbles: true,
+                        });
+
+                        this.loaded = true;
+                        this.dispatchEvent(event);
+                    }
                 });
         }
 
