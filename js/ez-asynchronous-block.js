@@ -1,17 +1,5 @@
 /* global eZ */
 (function () {
-    // FIXME: after https://jira.ez.no/browse/EZP-27582
-    // remove that function!
-    function filterTabHTMLCode(htmlCode) {
-        const doc = (new DOMParser()).parseFromString(htmlCode, 'text/html');
-        const main = doc.querySelector('main');
-
-        if ( main ) {
-            return main.innerHTML;
-        }
-        return htmlCode;
-    }
-
     /**
      * `<ez-asynchronous-block>` represents a block that can be loaded
      * asynchronously. It exposes a `load()` method that will request its `url`.
@@ -118,7 +106,7 @@
             // FIXME: after https://jira.ez.no/browse/EZP-27582
             // this._fetch should have a second parameter with the header
             // so the server generates the HTML without the app layout
-            this._fetch(update)
+            this._fetch(update, {'Accept': 'application/partial-update+html'})
                 .then((response) => {
                     if ( response.status >= 400 ) {
                         throw new Error();
@@ -128,13 +116,7 @@
                 .then((response) => response.text())
                 .then((htmlCode) => {
                     this.loading = false;
-                    // FIXME: after https://jira.ez.no/browse/EZP-27582
-                    // this is a workaround needed because the returned tab code
-                    // is decorated with the App Layout.
-                    // when EZP-27582 is implemented, the following line should
-                    // be:
-                    // this.innerHTML = htmlCode;
-                    this.innerHTML = filterTabHTMLCode(htmlCode);
+                    this.innerHTML = htmlCode;
                     this.loaded = true;
                     this._dispatchUpdated();
                 })
