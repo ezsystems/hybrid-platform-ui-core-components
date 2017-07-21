@@ -103,9 +103,6 @@
             const update = source || this.url;
 
             this.loading = true;
-            // FIXME: after https://jira.ez.no/browse/EZP-27582
-            // this._fetch should have a second parameter with the header
-            // so the server generates the HTML without the app layout
             this._fetch(update, {'Accept': 'application/partial-update+html'})
                 .then((response) => {
                     if ( response.status >= 400 ) {
