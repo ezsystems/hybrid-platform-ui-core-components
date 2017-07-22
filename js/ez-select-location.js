@@ -36,7 +36,7 @@
                 detail: {
                     config: {
                         // Should be translatable in the future: https://jira.ez.no/browse/EZP-27527
-                        title: 'Select location for swapping',
+                        title: 'Select a location',
                         startingLocationId: this.selectedLocationId,
                         confirmLabel: 'Select this location',
                     },
