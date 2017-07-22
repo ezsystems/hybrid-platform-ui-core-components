@@ -66,9 +66,16 @@ describe('ez-asynchronous-block', function() {
 
         it('should request the `url`', function () {
             element.load();
+            const headers = fetch.firstCall.args[1].headers;
 
             assert.isTrue(fetch.calledOnce);
             assert.isTrue(fetch.alwaysCalledWith(element.url));
+
+            assert.equal(
+                'application/partial-update+html',
+                headers.get('Accept'),
+                'The Accept header should be set to get a partial HTML update'
+            );
         });
 
         it('should update the content', function (done) {
