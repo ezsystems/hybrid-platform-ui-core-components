@@ -79,7 +79,7 @@ window.eZ = window.eZ || {};
              * @return {Boolean}
              */
             static _isSubmitButton(element) {
-                return element && element.matches('form input[type="submit"], form button, form input[type="image"]');
+                return element.form && (element.type === 'submit' || element.type === 'image');
             }
         };
     };
