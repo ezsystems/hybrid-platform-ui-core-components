@@ -44,6 +44,8 @@ window.eZ = window.eZ || {};
      * button in the Universal Discovery
      * * `data-ud-min-discover-depth` can be used to set the min discover depth
      * of the Universal Discovery
+     * * `data-ud-visible-method` can be used to set the default visible method
+     * in the Universal Discovery
      * * `data-ud-container` when this boolean attribute is set, the Universal
      * Discovery will be configured to only allow container Content item to be
      * selected.
@@ -146,6 +148,7 @@ window.eZ = window.eZ || {};
                     'startingLocationId': dataset.udStartingLocationId,
                     'confirmLabel': dataset.udConfirmLabel,
                     'minDiscoverDepth': dataset.udMinDiscoverDepth,
+                    'visibleMethod': dataset.udVisibleMethod,
                 };
             }
 

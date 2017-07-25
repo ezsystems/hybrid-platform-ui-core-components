@@ -125,6 +125,10 @@ describe('ez-run-universal-discovery', function () {
             it('should read the min discovery depth parameter', function () {
                 testUDConfig(element, button, 'data-ud-min-discover-depth', '2', 'minDiscoverDepth');
             });
+
+            it('should read the visible method parameter', function () {
+                testUDConfig(element, button, 'data-ud-visible-method', 'search', 'visibleMethod');
+            });
         });
 
         describe('select listener', function () {
