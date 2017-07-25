@@ -40,6 +40,8 @@ window.eZ = window.eZ || {};
      * * `data-ud-title` can be used to set the title of the Universal Discovery
      * * `data-ud-starting-location-id` can be used to set the starting Location
      * of the Universal Discovery
+     * * `data-ud-confirm-label` can be used to set the label of the confirm
+     * button in the Universal Discovery
      * * `data-ud-container` when this boolean attribute is set, the Universal
      * Discovery will be configured to only allow container Content item to be
      * selected.
@@ -134,10 +136,13 @@ window.eZ = window.eZ || {};
              * @return {Object}
              */
             _getUDConfig(runUDElement) {
+                const dataset = runUDElement.dataset;
+
                 return {
-                    'multiple': !!runUDElement.dataset.udMultiple,
-                    'title': runUDElement.dataset.udTitle,
-                    'startingLocationId': runUDElement.dataset.udStartingLocationId,
+                    'multiple': !!dataset.udMultiple,
+                    'title': dataset.udTitle,
+                    'startingLocationId': dataset.udStartingLocationId,
+                    'confirmLabel': dataset.udConfirmLabel,
                 };
             }
 

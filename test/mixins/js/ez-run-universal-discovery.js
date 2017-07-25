@@ -117,6 +117,10 @@ describe('ez-run-universal-discovery', function () {
             it('should read the starting Location id parameter', function () {
                 testUDConfig(element, button, 'data-ud-starting-location-id', '43', 'startingLocationId');
             });
+
+            it('should read the confirm label parameter', function () {
+                testUDConfig(element, button, 'data-ud-confirm-label', 'Sure?', 'confirmLabel');
+            });
         });
 
         describe('select listener', function () {
