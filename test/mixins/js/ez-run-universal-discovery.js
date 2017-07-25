@@ -121,6 +121,10 @@ describe('ez-run-universal-discovery', function () {
             it('should read the confirm label parameter', function () {
                 testUDConfig(element, button, 'data-ud-confirm-label', 'Sure?', 'confirmLabel');
             });
+
+            it('should read the min discovery depth parameter', function () {
+                testUDConfig(element, button, 'data-ud-min-discover-depth', '2', 'minDiscoverDepth');
+            });
         });
 
         describe('select listener', function () {

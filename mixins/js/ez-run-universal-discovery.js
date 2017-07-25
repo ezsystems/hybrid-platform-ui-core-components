@@ -42,6 +42,8 @@ window.eZ = window.eZ || {};
      * of the Universal Discovery
      * * `data-ud-confirm-label` can be used to set the label of the confirm
      * button in the Universal Discovery
+     * * `data-ud-min-discover-depth` can be used to set the min discover depth
+     * of the Universal Discovery
      * * `data-ud-container` when this boolean attribute is set, the Universal
      * Discovery will be configured to only allow container Content item to be
      * selected.
@@ -143,6 +145,7 @@ window.eZ = window.eZ || {};
                     'title': dataset.udTitle,
                     'startingLocationId': dataset.udStartingLocationId,
                     'confirmLabel': dataset.udConfirmLabel,
+                    'minDiscoverDepth': dataset.udMinDiscoverDepth,
                 };
             }
 
