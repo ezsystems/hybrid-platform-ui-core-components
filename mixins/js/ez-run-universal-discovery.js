@@ -38,6 +38,8 @@ window.eZ = window.eZ || {};
      * * `data-ud-multiple` when this boolean attribute is set, the Universal
      * Discovery is run the `multiple` option set to true
      * * `data-ud-title` can be used to set the title of the Universal Discovery
+     * * `data-ud-starting-location-id` can be used to set the starting Location
+     * of the Universal Discovery
      * * `data-ud-container` when this boolean attribute is set, the Universal
      * Discovery will be configured to only allow container Content item to be
      * selected.
@@ -75,6 +77,7 @@ window.eZ = window.eZ || {};
      * <button type="submit" class="ez-js-run-universal-discovery"
      *     data-ud-multiple
      *     data-ud-title="Title of the UDW"
+     *     data-ud-starting-location-id="43"
      *     data-ud-container
      *     data-ud-content-type-identifiers="folder article"
      *     data-ud-confirm-fill=".selector-of-input-to-fill"
@@ -84,8 +87,9 @@ window.eZ = window.eZ || {};
      * ```
      *
      * With that example, the Universal Discovery will allow a multiple
-     * selection of folder and articles. After confirming the selection, the
-     * input matching `.selector-of-input-to-fill` will be filled with the
+     * selection of folder and articles. It will be configured to start the
+     * discovery at the Location which id is 43. After confirming the selection,
+     * the input matching `.selector-of-input-to-fill` will be filled with the
      * Location ids and the form in which the button is will be submitted.
      *
      * @param {Function} superClass
@@ -133,7 +137,7 @@ window.eZ = window.eZ || {};
                 return {
                     'multiple': !!runUDElement.dataset.udMultiple,
                     'title': runUDElement.dataset.udTitle,
-                    // TODO read others data attributes to fully configure
+                    'startingLocationId': runUDElement.dataset.udStartingLocationId,
                 };
             }
 

@@ -113,6 +113,10 @@ describe('ez-run-universal-discovery', function () {
             it('should read title parameter', function () {
                 testUDConfig(element, button, 'data-ud-title', 'Walkin\' on the sun', 'title');
             });
+
+            it('should read the starting Location id parameter', function () {
+                testUDConfig(element, button, 'data-ud-starting-location-id', '43', 'startingLocationId');
+            });
         });
 
         describe('select listener', function () {
