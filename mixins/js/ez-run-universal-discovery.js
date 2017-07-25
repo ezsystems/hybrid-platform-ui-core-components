@@ -36,7 +36,7 @@ window.eZ = window.eZ || {};
      * configured based on `data-ud-*` attributes on the button itself:
      *
      * * `data-ud-multiple` when this boolean attribute is set, the Universal
-     * Discovery is run the `multiple` option set to true
+     * Discovery is run with the `multiple` option set to true
      * * `data-ud-title` can be used to set the title of the Universal Discovery
      * * `data-ud-starting-location-id` can be used to set the starting Location
      * of the Universal Discovery
@@ -49,18 +49,18 @@ window.eZ = window.eZ || {};
      * * `data-ud-container` when this boolean attribute is set, the Universal
      * Discovery will be configured to only allow container Content item to be
      * selected.
-     * * `data-ud-content-type-identifier` expect a space separated list of
+     * * `data-ud-content-type-identifiers` expects a space separated list of
      * Content Type identifiers. When set, only Content items of the given list
      * of Content Types can be selected.
      * * `data-ud-confirm-fill` and `data-ud-confirm-fill-with` can be used to
      * fill a form input with a property of the selection.
      * `data-ud-confirm-fill` expects a selector matching an input.
-     * `data-ud-confirm-fill-with` expects a path in the selection. For
-     * instance, to retrieve the Location id(s), it should be filled with
-     * `location.id`. If the Universal Discovery is configured to allow a
-     * multiple selection, the input will be filled with the corresponding value
-     * separated by a coma (e.g. `42,43` if the user picked the Locations #42
-     * and #43)
+     * `data-ud-confirm-fill-with` expects a string representing a path to a
+     * property in the selection. For instance, to retrieve the Location id(s),
+     * it should have the valueh `location.id`. If the Universal Discovery is
+     * configured to allow a multiple selection, the input will be filled with
+     * the corresponding value separated by a coma (e.g. `42,43` if the user
+     * picked the Locations #42 and #43)
      *
      * When the Universal Discovery is run with that convention, the
      * `ez:runUniversalDiscovery:select` event is dispatched from the element
