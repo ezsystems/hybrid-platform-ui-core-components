@@ -15,11 +15,11 @@
     <link rel="import" href="../ez-platform-ui-app.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
-        ez-platform-ui-app {
+        .navigation {
             position: relative;
         }
 
-        ez-platform-ui-app:after {
+        .navigation:after {
             font-style: italic;
             position: absolute;
             right: 0;
@@ -34,10 +34,10 @@
   </head>
   <body>
     <div class="vertical-section-container centered">
-      <h3>Basic ez-platform-ui-app demo</h3>
+      <h3>Enhanced navigation demo</h3>
       <demo-snippet>
         <template>
-            <ez-platform-ui-app>
+            <ez-platform-ui-app class="navigation">
                 <nav data-last-update="none">
                     Navigation
                 </nav>
@@ -55,6 +55,20 @@
                 </main>
             </ez-platform-ui-app>
         </template>
+      </demo-snippet>
+      <h3>Modal demo</h3>
+      <demo-snippet>
+          <template>
+              <ez-platform-ui-app>
+                  <button type="button" value="#modal" class="ez-js-open-modal">Open</button>
+
+                  <dialog id="modal" class="ez-modal">
+                      <p>This is a modal</p>
+
+                      <button type="button" class="ez-js-close-modal">Close</button>
+                  </dialog>
+              </ez-platform-ui-app>
+          </template>
       </demo-snippet>
     </div>
   </body>
