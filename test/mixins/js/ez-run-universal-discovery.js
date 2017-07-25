@@ -132,7 +132,7 @@ describe('ez-run-universal-discovery', function () {
         });
 
         describe('select listener', function () {
-            let button;
+            let button, listener;
 
             beforeEach(function () {
                 button = element.querySelector('.no-submit');
@@ -161,8 +161,6 @@ describe('ez-run-universal-discovery', function () {
             }
 
             describe('container', function () {
-                let listener;
-
                 beforeEach(function () {
                     button.setAttribute('data-ud-container', true);
                     listener = getSelectListener(button);
@@ -190,8 +188,6 @@ describe('ez-run-universal-discovery', function () {
             });
 
             describe('content types', function () {
-                let listener;
-
                 beforeEach(function () {
                     button.setAttribute(
                         'data-ud-content-type-identifiers',
@@ -234,6 +230,40 @@ describe('ez-run-universal-discovery', function () {
 
                 it('should disallow `fold`', function () {
                     testDisallowContentType('fold');
+                });
+            });
+
+            describe('`ez:runUniversalDiscovery:select`', function () {
+                let selectEvt;
+
+                beforeEach(function () {
+                    listener = getSelectListener(button);
+                    selectEvt = getSelectEvent();
+                });
+
+                it('should be dispatched', function () {
+                    let runUniversalDiscoverySelect = false;
+
+                    addEventListenerOnce(document, 'ez:runUniversalDiscovery:select', function (e) {
+                        runUniversalDiscoverySelect = true;
+
+                        assert.strictEqual(
+                            e.detail.selection, selectEvt.detail.selection,
+                            'The selection should be provided in the event detail'
+                        );
+                    });
+                    listener(selectEvt);
+
+                    assert.isTrue(runUniversalDiscoverySelect);
+                });
+
+                it('should allow to prevent the selection', function () {
+                    addEventListenerOnce(element, 'ez:runUniversalDiscovery:select', function (e) {
+                        e.preventDefault();
+                    });
+                    listener(selectEvt);
+
+                    assert.isTrue(selectEvt.defaultPrevented);
                 });
             });
         });

@@ -33,7 +33,7 @@ window.eZ = window.eZ || {};
      * on any HTML element. The resulting class transforms a click on an element
      * (typically a button) with the class `ez-js-run-universal-discovery` in a
      * request to run the Universal Discovery. The Universal Discovery will be
-     * configured based `data-ud-*` attribute on the button itself:
+     * configured based on `data-ud-*` attributes on the button itself:
      *
      * * `data-ud-multiple` when this boolean attribute is set, the Universal
      * Discovery is run the `multiple` option set to true
@@ -61,6 +61,21 @@ window.eZ = window.eZ || {};
      * multiple selection, the input will be filled with the corresponding value
      * separated by a coma (e.g. `42,43` if the user picked the Locations #42
      * and #43)
+     *
+     * When the Universal Discovery is run with that convention, the
+     * `ez:runUniversalDiscovery:select` event is dispatched from the element
+     * holding the `ez-js-run-universal-discovery` class. It is made to allow to
+     * implement custom selection constraints (besides checking if the Content
+     * is a container or is an instance of a Content Type):
+     *
+     * ```js
+     * document.addEventListener('ez:runUniversalDiscovery:select', function (e) {
+     *     // e.detail.selection contains the UD selection
+     *     if ( selectionIsNotWhatIWant ) {
+     *         e.preventDefault();
+     *     }
+     * });
+     * ```
      *
      * After confirming the Universal Discovery selection, the event
      * `ez:runUniversalDiscovery:confirm` is dispatched from the element holding
@@ -247,9 +262,18 @@ window.eZ = window.eZ || {};
              */
             _getUDSelectListener(runUDElement) {
                 const dataset = runUDElement.dataset;
-                let listener = function () {
-                    // TODO dispatch ez:runUniversalDiscovery:select so that it's
-                    // possible to add custom contraints
+                let listener = function (e) {
+                    const event = new CustomEvent('ez:runUniversalDiscovery:select', {
+                        bubbles: true,
+                        cancelable: true,
+                        detail: {
+                            selection: e.detail.selection,
+                        },
+                    });
+
+                    if ( !runUDElement.dispatchEvent(event) ) {
+                        e.preventDefault();
+                    }
                 };
 
                 if ( dataset.udContainer ) {
