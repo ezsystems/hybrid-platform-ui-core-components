@@ -4,49 +4,33 @@ describe('ez-selection-activate-element', function() {
 
     beforeEach(function () {
         element = fixture('BasicTestFixture');
-        elementSubsetElementChecked =  fixture('TestFixtureSubsetElementChecked');
+        elementSubsetElementChecked = fixture('TestFixtureSubsetElementChecked');
     });
+
+    function setCheckboxCheckState(checked, checkbox) {
+        // that's a bit tricky for Edge and Safari because unlike in others
+        // browsers, simulating the click event actually check or uncheck the
+        // checkbox, while that's not the case in others browsers. So the click
+        // listener allows to force a "checked" status on the checkbox.
+        checkbox.addEventListener('click', function () {
+            checkbox.checked = checked;
+        });
+        checkbox.dispatchEvent(new CustomEvent('click', {
+            bubbles: true,
+            cancelable: true,
+        }));
+    }
 
     function checkAndclickOneElement(elem, selector) {
         const checkbox = elem.querySelector(selector);
-        // we need to prevent the click event at the document level
-        // to prevent Edge/Safari from checking the input when clicked
-        // so preventDefault() will be called in the test but we verify
-        // that's it not called, that's why `preventDefaultCalled`
-        // local variable was introduced.
-        let preventDefaultCalled = false;
-        const prevent = function(e) {
-            preventDefaultCalled = e.defaultPrevented;
-            e.preventDefault();
-        };
 
-        document.addEventListener('click', prevent);
-        checkbox.checked = true;
-        checkbox.dispatchEvent(new CustomEvent('click', {
-            bubbles: true,
-        }));
-
-        assert.isFalse(preventDefaultCalled);
+        setCheckboxCheckState(true, checkbox);
     }
 
     function checkAndclickEveryElements(elem, selector) {
         const checkboxes = elem.querySelectorAll(selector);
-        // same comment than in checkAndclickOneElement().
-        let preventDefaultCalled = false;
-        const prevent = function(e) {
-            preventDefaultCalled = e.defaultPrevented;
-            e.preventDefault();
-        };
 
-        document.addEventListener('click', prevent);
-        checkboxes.forEach((checkbox) => {
-            checkbox.checked = true;
-            checkbox.dispatchEvent(new CustomEvent('click', {
-                bubbles: true,
-            }));
-        });
-
-        assert.isFalse(preventDefaultCalled);
+        checkboxes.forEach(setCheckboxCheckState.bind(this, true));
     }
 
     it('should be defined', function () {
@@ -75,6 +59,7 @@ describe('ez-selection-activate-element', function() {
                 assert.isFalse(activableElement.disabled);
                 assert.isFalse(activableElementSingleSelection.disabled);
             });
+
             describe('custom selection', function () {
                 it('should enable activable buttons based on custom selection', function () {
                     const activableElement = elementSubsetElementChecked.querySelector('.ez-js-activable-element');
@@ -131,24 +116,10 @@ describe('ez-selection-activate-element', function() {
             it('should disable elements', function () {
                 const activableElement = element.querySelector('.ez-js-activable-element');
                 const checkbox = element.querySelector(element.selectionSelector);
-                // we need to prevent the click event at the document level
-                // to prevent Edge/Safari from checking the input when clicked
-                // so preventDefault() will be called in the test but we verify
-                // that's it not called, that's why `preventDefaultCalled`
-                // local variable was introduced.
-                let preventDefaultCalled = false;
-                const prevent = function(e) {
-                    preventDefaultCalled = e.defaultPrevented;
-                    e.preventDefault();
-                };
 
                 activableElement.disabled = false;
-                document.addEventListener('click', prevent);
-                checkbox.dispatchEvent(new CustomEvent('click', {
-                    bubbles: true,
-                }));
+                setCheckboxCheckState(false, checkbox);
 
-                assert.isFalse(preventDefaultCalled);
                 assert.isTrue(activableElement.disabled);
             });
         });
