@@ -97,7 +97,21 @@
             </template>
         </test-fixture>
 
+        <test-fixture id="RunUDTestFixture">
+            <template>
+                <ez-platform-ui-app>
+                    <form class="ez-js-standard-form">
+                        <input type="text" value="" class="input-to-fill">
+                        <button type="button" class="ez-js-run-universal-discovery no-submit">No <span>submit</span></button>
+                        <button type="submit" class="ez-js-run-universal-discovery submit">Submit</button>
+                        <button type="button" class="no-action">No action</action>
+                    </form>
+                </ez-platform-ui-app>
+            </template>
+        </test-fixture>
+
         <script src="js/ez-platform-ui-app.js"></script>
         <script src="mixins/js/ez-modal.js"></script>
+        <script src="mixins/js/ez-run-universal-discovery.js"></script>
     </body>
 </html>

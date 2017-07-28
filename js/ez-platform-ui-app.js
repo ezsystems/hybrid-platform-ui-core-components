@@ -29,7 +29,7 @@
         return updateStruct;
     }
 
-    const Base = eZ.mixins.Modal(eZ.mixins.AjaxFetcher(Polymer.Element));
+    const {Modal, AjaxFetcher, RunUniversalDiscovery} = eZ.mixins;
 
     /**
      * `<ez-platform-ui-app>` represents the application in a page which will
@@ -69,6 +69,10 @@
      * </div>
      * ```
      *
+     * It is also created with `eZ.mixins.RunUniversalDiscovery` and
+     * `eZ.mixins.Modal` mixins, so the app is also able to recognize the markup
+     * conventions defined in those.
+     *
      * Among others standard APIs, this component relies on `fetch` and
      * `Element.closest`. `fetch` is not supported by Safari 10.0 and
      * `Element.closest` is not available in Edge 14. So for this component to
@@ -78,7 +82,7 @@
      * @polymerElement
      * @demo demo/ez-platform-ui-app.html
      */
-    class PlatformUiApp extends Base {
+    class PlatformUiApp extends AjaxFetcher(RunUniversalDiscovery(Modal(Polymer.Element))) {
         static get is() {
             return 'ez-platform-ui-app';
         }

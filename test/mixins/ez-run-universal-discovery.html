@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-run-universal-discovery test</title>
+
+        <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../../element-matches/closest.js"></script><!-- for Edge 14 -->
+        <script src="../../../web-component-tester/browser.js"></script>
+
+        <link rel="import" href="../../../polymer/polymer-element.html">
+        <link rel="import" href="../../mixins/ez-run-universal-discovery.html">
+        <script>
+        window.addEventListener('WebComponentsReady', function () {
+            class TestElement extends eZ.mixins.RunUniversalDiscovery(Polymer.Element) {
+                static get is() {
+                    return 'ez-test-run-universal-discovery';
+                }
+            }
+
+            window.customElements.define(TestElement.is, TestElement);
+        });
+        </script>
+    </head>
+    <body>
+        <test-fixture id="RunUDTestFixture">
+            <template>
+                <ez-test-run-universal-discovery>
+                    <form>
+                        <input type="text" value="" class="input-to-fill">
+                        <button type="button" class="ez-js-run-universal-discovery no-submit">No <span>submit</span></button>
+                        <button type="submit" class="ez-js-run-universal-discovery submit">Submit</button>
+                        <button type="button" class="no-action">No action</action>
+                    </form>
+                </ez-test-run-universal-discovery>
+            </template>
+        </test-fixture>
+
+        <script src="js/ez-run-universal-discovery.js"></script>
+    </body>
+</html>

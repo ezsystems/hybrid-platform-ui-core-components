@@ -6,7 +6,7 @@ before_script:
   - bower install
 
 addons:
-  firefox: latest
+  firefox: latest-beta
   apt:
     sources:
       - google-chrome
