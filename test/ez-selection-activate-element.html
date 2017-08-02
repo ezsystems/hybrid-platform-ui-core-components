@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-selection-activate-element test</title>
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../element-matches/closest.js"></script><!-- for Edge 14 -->
+        <script src="../../web-component-tester/browser.js"></script>
+
+        <link rel="import" href="../ez-selection-activate-element.html">
+    </head>
+    <body>
+
+        <test-fixture id="BasicTestFixture">
+            <template>
+                <ez-selection-activate-element>
+                    <ul>
+                        <li><input type="checkbox"></li>
+                        <li><input type="checkbox"></li>
+                    </ul>
+                    <button class="ez-js-activable-element" disabled>Do!</button>
+                    <button class="ez-js-activable-element ez-js-activable-element-single-selection" disabled>Do!</button>
+                </ez-selection-activate-element>
+            </template>
+        </test-fixture>
+        <test-fixture id="TestFixtureSubsetElementChecked">
+            <template>
+                <ez-selection-activate-element selection-selector=".checkboxes-that-matches">
+                    <ul>
+                        <li><input type="checkbox" class="this-checkbox-will-not-match">this one should not activate button</li>
+                        <li><input type="checkbox" class="this-checkbox-will-not-match">this one should not activate button</li>
+                        <li><input type="checkbox" class="checkboxes-that-matches">this one should activate button</li>
+                        <li><input type="checkbox" class="checkboxes-that-matches">this one should activate button</li>
+                    </ul>
+                    <button class="ez-js-activable-element" disabled>Do!</button>
+                    <button class="ez-js-activable-element ez-js-activable-element-single-selection" disabled>Do!</button>
+                </ez-selection-activate-element>
+            </template>
+        </test-fixture>
+
+        <script src="js/ez-selection-activate-element.js"></script>
+    </body>
+</html>

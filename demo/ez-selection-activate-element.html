@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-selection-activate-element demo</title>
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../element-matches/closest.js"></script><!-- for Edge 14 -->
+
+        <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+        <link rel="import" href="../ez-selection-activate-element.html">
+
+    </head>
+    <body>
+        <div class="vertical-section-container centered">
+            <h3>Enable a button based on checkboxes</h3>
+            <demo-snippet>
+                <template>
+                    <ez-selection-activate-element>
+                        <ul>
+                            <li><input type="checkbox"></li>
+                            <li><input type="checkbox"></li>
+                        </ul>
+                        <button class="ez-js-activable-element" disabled>Do!</button>
+                    </ez-selection-activate-element>
+                </template>
+            </demo-snippet>
+            <h3>Enable a button only if one element is selected</h3>
+            <demo-snippet>
+                <template>
+                    <ez-selection-activate-element>
+                        <ul>
+                            <li><input type="checkbox"></li>
+                            <li><input type="checkbox"></li>
+                        </ul>
+                        <button class="ez-js-activable-element ez-js-activable-element-single-selection" disabled>Do!</button>
+                    </ez-selection-activate-element>
+                </template>
+            </demo-snippet>
+            <h3>Enable a button based on a subset of checkboxes</h3>
+            <demo-snippet>
+                <template>
+                    <ez-selection-activate-element selection-selector=".checkboxes-that-matches">
+                        <ul>
+                            <li><input type="checkbox" class="this-checkbox-will-not-match"></li> this one should not activate button
+                            <li><input type="checkbox" class="checkboxes-that-matches"></li> this one should activate button
+                        </ul>
+                        <button class="ez-js-activable-element" disabled>Do!</button>
+                    </ez-selection-activate-element>
+                </template>
+            </demo-snippet>
+        </div>
+    </body>
+</html>
