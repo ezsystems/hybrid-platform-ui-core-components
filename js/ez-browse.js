@@ -17,9 +17,9 @@
 
         static get properties() {
             return {
-              /**
-               * The selected location id which will determine the starting location id of the UDW.
-               */
+                /**
+                 * The selected location id which will determine the starting location id of the UDW.
+                 */
                 'selectedLocationId': {
                     type: Number,
                 },
