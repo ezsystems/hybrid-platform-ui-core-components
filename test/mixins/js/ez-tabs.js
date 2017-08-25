@@ -1,22 +1,20 @@
 describe('ez-tabs', function () {
     let element;
 
-    beforeEach(function () {
-        element = fixture('BasicTestFixture');
-    });
-
     it('should define `eZ.mixins.Tabs`', function () {
         assert.isFunction(window.eZ.mixins.Tabs);
     });
 
-    describe('swich tab', function () {
+    function simulateClick(element) {
+        element.dispatchEvent(new CustomEvent('click', {
+            bubbles: true,
+        }));
+    }
+
+    describe('switch tab', function () {
         let link, label, panel;
 
-        function simulateClick(element) {
-            element.dispatchEvent(new CustomEvent('click', {
-                bubbles: true,
-            }));
-        }
+        element = fixture('BasicTestFixture');
 
         beforeEach(function () {
             link = element.querySelector('.tab-link');
@@ -103,6 +101,40 @@ describe('ez-tabs', function () {
                     'A new panel should not be visible'
                 );
             });
+        });
+    });
+
+    describe('switch tab in a correct container', function () {
+        let link, label, panel;
+
+        const CLASS_TAB_SELECTED = 'is-tab-selected';
+        const SELECTOR_TAB_SELECTED = '.is-tab-selected';
+
+        element = fixture('AdvancedTestFixture');
+
+        beforeEach(function () {
+            link = element.querySelector('#clickable-link');
+            label = link.parentNode;
+            panel = element.querySelector(link.getAttribute('href'));
+        });
+
+        it('should change tab in a correct tabs container', function () {
+            const tabContainers = [].slice.call(element.querySelectorAll('.ez-tabs'));
+            const selectedTabs = [].slice.call(element.querySelectorAll(SELECTOR_TAB_SELECTED));
+            const selectedTab = element.querySelector('#test-tab');
+            const selectedPanel = element.querySelector('#tab1');
+
+            simulateClick(link);
+
+            tabContainers.forEach(function (container) {
+                assert.length(container.querySelectorAll(SELECTOR_TAB_SELECTED), 1, 'The tabs container should contain one tab selected');
+            });
+
+            assert.isFalse(selectedTab.classList.contains(CLASS_TAB_SELECTED), 'Previously selected tab should be unselected');
+            assert.isFalse(selectedPanel.classList.contains(CLASS_TAB_SELECTED), 'Previously selected panel should not be visible');
+
+            assert.isTrue(label.classList.contains(CLASS_TAB_SELECTED), 'A new tab should be selected');
+            assert.isTrue(panel.classList.contains(CLASS_TAB_SELECTED), 'A new panel should be visible');
         });
     });
 });
