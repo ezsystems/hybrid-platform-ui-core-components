@@ -10,16 +10,28 @@ describe('ez-auto-submit', function () {
     });
 
     describe('auto submit', function () {
-        let form, input;
+        let form, input, iframe;
 
         beforeEach(function () {
             form = element.querySelector('form');
             input = form.elements[0];
+
             sinon.stub(form, 'submit');
+            // this is very very tricky... It seems like overriding
+            // form.submit() is not enough in Firefox to prevent the
+            // form from being submitted and this interrupts the unit
+            // tests since the page is reloaded. To avoid that, the form
+            // is submitted in an iframe
+            iframe = document.createElement('iframe');
+            iframe.style.visibility = 'hidden';
+            document.body.appendChild(iframe);
+            iframe.name = 'iframe';
+            form.target = iframe.name;
         });
 
         afterEach(function () {
             form.submit.restore();
+            iframe.remove();
         });
 
         function addEventListenerOnce(element, eventName, listener) {
