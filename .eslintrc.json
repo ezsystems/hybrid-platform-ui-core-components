@@ -10,6 +10,7 @@
     "globals": {
         "Polymer": false,
         "fixture": false,
+        "stub": false,
         "flush": false,
         "assert": false,
         "sinon": false,
