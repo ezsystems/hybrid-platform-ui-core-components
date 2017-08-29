@@ -115,7 +115,7 @@
                     this.loading = false;
                     this.innerHTML = htmlCode;
                     this.loaded = true;
-                    this._dispatchUpdated();
+                    this._dispatchUpdated(update);
                 })
                 .catch((error) => {
                     this.loading = false;
@@ -125,12 +125,18 @@
 
         /**
          * Dispatches the `ez:asynchronousBlock:updated` event. It is configured
-         * to bubble but it is not cancelable.
+         * to bubble but it is not cancelable. It also carries the update
+         * `source` ie the requested URL or the submitted form.
+         *
+         * @param {String|HTMLFormElement} source
          */
-        _dispatchUpdated() {
+        _dispatchUpdated(source) {
             this.dispatchEvent(new CustomEvent('ez:asynchronousBlock:updated', {
                 bubbles: true,
                 cancelable: false,
+                detail: {
+                    source: source,
+                },
             }));
         }
 
