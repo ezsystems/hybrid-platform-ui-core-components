@@ -16,7 +16,7 @@
     "test-local": "./node_modules/.bin/polymer test --skip-plugin sauce --expanded",
     "test-sauce": "./node_modules/.bin/polymer test --skip-plugin local --expanded",
     "serve": "./node_modules/.bin/polymer serve",
-    "lint": "./node_modules/.bin/eslint js test/js"
+    "lint": "./node_modules/.bin/eslint js mixins/js test/js"
   },
   "repository": {
     "type": "git",
