@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+        <title>ez-auto-submit test</title>
+
+        <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../../element-matches/closest.js"></script><!-- for Edge 14 -->
+        <script src="../../../web-component-tester/browser.js"></script>
+
+        <link rel="import" href="../../../polymer/polymer-element.html">
+        <link rel="import" href="../../mixins/ez-auto-submit.html">
+        <script>
+        window.addEventListener('WebComponentsReady', function () {
+            class TestElement extends eZ.mixins.AutoSubmit(Polymer.Element) {
+                static get is() {
+                    return 'ez-test-auto-submit';
+                }
+            }
+
+            window.customElements.define(TestElement.is, TestElement);
+        });
+        </script>
+    </head>
+    <body>
+        <test-fixture id="AutoSubmitTestFixture">
+            <template>
+                <ez-test-auto-submit>
+                    <form method="post" action="/whatever" class="ez-js-auto-submit">
+                        <input type="text" name="name">
+                    </form>
+                </ez-test-auto-submit>
+            </template>
+        </test-fixture>
+
+        <script src="js/ez-auto-submit.js"></script>
+    </body>
+</html>

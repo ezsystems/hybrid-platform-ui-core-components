@@ -29,7 +29,7 @@
         return updateStruct;
     }
 
-    const {Modal, AjaxFetcher, RunUniversalDiscovery} = eZ.mixins;
+    const {Modal, AjaxFetcher, AutoSubmit, RunUniversalDiscovery} = eZ.mixins;
 
     /**
      * `<ez-platform-ui-app>` represents the application in a page which will
@@ -82,7 +82,7 @@
      * @polymerElement
      * @demo demo/ez-platform-ui-app.html
      */
-    class PlatformUiApp extends AjaxFetcher(RunUniversalDiscovery(Modal(Polymer.Element))) {
+    class PlatformUiApp extends AjaxFetcher(AutoSubmit(RunUniversalDiscovery(Modal(Polymer.Element)))) {
         static get is() {
             return 'ez-platform-ui-app';
         }

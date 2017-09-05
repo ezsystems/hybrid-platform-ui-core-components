@@ -330,11 +330,27 @@ describe('ez-run-universal-discovery', function () {
             });
 
             describe('form', function () {
-                let form;
+                let form, iframe;
 
                 beforeEach(function () {
                     form = element.querySelector('form');
+
                     sinon.stub(form, 'submit');
+                    // this is very very tricky... It seems like overriding
+                    // form.submit() is not enough in Firefox to prevent the
+                    // form from being submitted and this interrupts the unit
+                    // tests since the page is reloaded. To avoid that, the form
+                    // is submitted in an iframe
+                    iframe = document.createElement('iframe');
+                    iframe.style.visibility = 'hidden';
+                    document.body.appendChild(iframe);
+                    iframe.name = 'iframe';
+                    form.target = iframe.name;
+                });
+
+                afterEach(function () {
+                    form.submit.restore();
+                    iframe.remove();
                 });
 
                 it('should not submit the form', function () {

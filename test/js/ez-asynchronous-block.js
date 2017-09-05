@@ -56,34 +56,36 @@ describe('ez-asynchronous-block', function() {
     });
 
     describe('load()', function () {
-        beforeEach(function () {
-            sinon.spy(window, 'fetch');
-        });
-
-        afterEach(function () {
-            fetch.restore();
-        });
-
-        it('should request the `url`', function () {
-            element.load();
-            const headers = fetch.firstCall.args[1].headers;
-
-            assert.isTrue(fetch.calledOnce);
-            assert.isTrue(fetch.alwaysCalledWith(element.url));
-
-            assert.equal(
-                'application/partial-update+html',
-                headers.get('Accept'),
-                'The Accept header should be set to get a partial HTML update'
-            );
-        });
-
-        it('should update the content', function (done) {
-            element.addEventListener('ez:asynchronousBlock:updated', function () {
-                assert.isNotNull(element.querySelector('.updated'));
-                done();
+        describe('successful load', function() {
+            beforeEach(function () {
+                sinon.spy(window, 'fetch');
             });
-            element.load();
+
+            afterEach(function () {
+                fetch.restore();
+            });
+
+            it('should request the `url`', function () {
+                element.load();
+                const headers = fetch.firstCall.args[1].headers;
+
+                assert.isTrue(fetch.calledOnce);
+                assert.isTrue(fetch.alwaysCalledWith(element.url));
+
+                assert.equal(
+                    'application/partial-update+html',
+                    headers.get('Accept'),
+                    'The Accept header should be set to get a partial HTML update'
+                );
+            });
+
+            it('should update the content', function (done) {
+                element.addEventListener('ez:asynchronousBlock:updated', function () {
+                    assert.isNotNull(element.querySelector('.updated'));
+                    done();
+                });
+                element.load();
+            });
         });
 
         describe('network error handling', function () {
@@ -137,6 +139,38 @@ describe('ez-asynchronous-block', function() {
         describe('`ez:asynchronousBlock:updated`', function () {
             it('should bubble', function (done) {
                 testBubble(element, 'ez:asynchronousBlock:updated', done);
+            });
+
+            describe('source of update', function () {
+                beforeEach(function () {
+                    const response = new Response('');
+
+                    sinon.stub(window, 'fetch', function () {
+                        return Promise.resolve(response);
+                    });
+                });
+
+                afterEach(function () {
+                    fetch.restore();
+                });
+
+                it('should contain the requested URL', function (done) {
+                    element.addEventListener('ez:asynchronousBlock:updated', function (e) {
+                        assert.equal(element.url, e.detail.source);
+                        done();
+                    });
+                    element.load();
+                });
+
+                it('should reference the AJAX submitted form', function (done) {
+                    const form = elementForm.querySelector('form');
+
+                    elementForm.addEventListener('ez:asynchronousBlock:updated', function (e) {
+                        assert.strictEqual(form, e.detail.source);
+                        done();
+                    });
+                    elementForm.load(form);
+                });
             });
         });
 
