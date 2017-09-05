@@ -56,13 +56,13 @@ describe('ez-asynchronous-block', function() {
     });
 
     describe('load()', function () {
+        afterEach(function () {
+            fetch.restore();
+        });
+
         describe('successful load', function() {
             beforeEach(function () {
                 sinon.spy(window, 'fetch');
-            });
-
-            afterEach(function () {
-                fetch.restore();
             });
 
             it('should request the `url`', function () {
@@ -88,7 +88,43 @@ describe('ez-asynchronous-block', function() {
             });
         });
 
+        describe('redirection', function () {
+            const url = 'h/e/r/e';
+
+            beforeEach(function () {
+                const headers = {
+                    get: function (param) {
+                        if ( param === 'App-Location') {
+                            return url;
+                        }
+                    },
+                };
+                const response =  {'status': 205, 'headers': headers};
+
+                sinon.stub(window, 'fetch', function () {
+                    return Promise.resolve(response);
+                });
+            });
+
+            it('should be redirected after 205 status', function (done) {
+                const navigate = function (e) {
+                    document.removeEventListener('ez:navigateTo', navigate);
+                    assert.isTrue(element.loaded);
+                    assert.equal(e.detail.url, url, 'The event should contains the url');
+                    done();
+                };
+
+                document.addEventListener('ez:navigateTo', navigate);
+                element.load();
+                assert.isTrue(fetch.calledOnce);
+            });
+        });
+
         describe('network error handling', function () {
+            beforeEach(function () {
+                sinon.spy(window, 'fetch');
+            });
+
             function assertError(error, element) {
                 // this should test instanceof Error instead
                 // but in Edge with the fetch polyfill it's not an Error object!?
@@ -138,6 +174,7 @@ describe('ez-asynchronous-block', function() {
 
         describe('`ez:asynchronousBlock:updated`', function () {
             it('should bubble', function (done) {
+                sinon.spy(window, 'fetch');
                 testBubble(element, 'ez:asynchronousBlock:updated', done);
             });
 
@@ -148,10 +185,6 @@ describe('ez-asynchronous-block', function() {
                     sinon.stub(window, 'fetch', function () {
                         return Promise.resolve(response);
                     });
-                });
-
-                afterEach(function () {
-                    fetch.restore();
                 });
 
                 it('should contain the requested URL', function (done) {
@@ -175,6 +208,10 @@ describe('ez-asynchronous-block', function() {
         });
 
         describe('`ez:asynchronousBlock:error', function () {
+            beforeEach(function () {
+                sinon.spy(window, 'fetch');
+            });
+
             it('should bubble', function (done) {
                 element.url = 'http://ihopeitwillneverexists.test';
                 testBubble(element, 'ez:asynchronousBlock:error', done);
