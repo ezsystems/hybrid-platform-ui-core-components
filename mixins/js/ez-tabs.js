@@ -78,7 +78,9 @@ window.eZ = window.eZ || {};
 
                     e.preventDefault();
                     if ( this._dispatchTabChange(label, panel) ) {
-                        this._changeTab(panel, label);
+                        const tabsContainer = e.target.closest('.ez-tabs');
+
+                        this._changeTab(panel, label, tabsContainer);
                     }
                 }
             }
@@ -107,9 +109,10 @@ window.eZ = window.eZ || {};
              *
              * @param {HTMLElement} panel
              * @param {HTMLElement} tabsLabel
+             * @param {HTMLElement} tabs container DOM node
              */
-            _changeTab(panel, tabsLabel) {
-                this._unselectTab();
+            _changeTab(panel, tabsLabel, tabsContainer) {
+                this._unselectTab(tabsContainer);
 
                 tabsLabel.classList.add(TAB_IS_SELECTED);
                 panel.classList.add(TAB_IS_SELECTED);
@@ -117,11 +120,13 @@ window.eZ = window.eZ || {};
 
             /**
              * Unselects currently selected tabs
+             *
+             * @param {HTMLElement} tabs container DOM node
              */
-            _unselectTab() {
+            _unselectTab(tabsContainer) {
                 const forEach = Array.prototype.forEach;
 
-                forEach.call(this.querySelectorAll('.' + TAB_IS_SELECTED), function (element) {
+                forEach.call(tabsContainer.querySelectorAll('.' + TAB_IS_SELECTED), function (element) {
                     element.classList.remove(TAB_IS_SELECTED);
                 });
             }
