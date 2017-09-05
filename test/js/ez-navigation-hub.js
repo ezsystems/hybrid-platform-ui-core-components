@@ -105,6 +105,15 @@ describe('ez-navigation-hub', function() {
                 assert.isOk(zone.classList.contains(element.activeZoneClass));
             });
 
+            it('should handle deep structure in zone link', function () {
+                const zone = element.querySelector('[data-zone-identifier="complicated-link"]');
+                const span = zone.querySelector('span');
+                const event = simulateClick(span);
+
+                assertEventHandled(event);
+                assert.isOk(zone.classList.contains(element.activeZoneClass));
+            });
+
             it('should switch zone highlight', function () {
                 const contentsZone = element.querySelector('[data-zone-identifier="contents"]');
                 const otherZone = element.querySelector('[data-zone-identifier="other"]');
