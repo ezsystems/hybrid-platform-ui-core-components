@@ -55,9 +55,11 @@
         connectedCallback() {
             super.connectedCallback();
             this.addEventListener('click', (e) => {
-                if ( e.target.matches('[data-zone-identifier] a') ) {
+                const zone = e.target.closest('[data-zone-identifier]');
+
+                if ( zone ) {
                     e.preventDefault();
-                    this.activeZone = e.target.parentNode.getAttribute('data-zone-identifier');
+                    this.activeZone = zone.getAttribute('data-zone-identifier');
                 }
             });
             Polymer.RenderStatus.afterNextRender(this, function () {
